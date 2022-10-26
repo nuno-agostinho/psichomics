@@ -252,9 +252,11 @@ fileBrowserInput <- function(id, label, value=NULL, placeholder=NULL,
 
     check <- function (x, y) {
         # Based on shiny:::`%AND%`
-        if (!is.null(x) && !is.na(x))
-            if (!is.null(y) && !is.na(y))
+        if (!is.null(x) && !is.na(x)) {
+            if (!is.null(y) && !is.na(y$children[[1]])) {
                 return(y)
+            }
+        }
         return(NULL)
     }
 
