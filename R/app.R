@@ -233,7 +233,7 @@ modTabPanel <- function(title, ..., icon=NULL, menu=FALSE) {
 replaceStrInList <- function(tag, old, new) {
     FUN <- function(x) {
         res <- x
-        if (grepl(old, x)) res <- gsub(old, new, x, fixed=TRUE)
+        if (any(grepl(old, x))) res <- gsub(old, new, x, fixed=TRUE)
         return(res)
     }
     rapply(tag, FUN, how="replace", classes="character")

@@ -1,3 +1,7 @@
+# psichomics 1.24.0 (26 Oct, 2022)
+
+* Bug fix: psichomics app now opens as expected instead of crashing
+
 # psichomics 1.22.1 (14 July, 2022)
 
 * Bug fix: GTEx data v8 can now be downloaded using newer versions of R
