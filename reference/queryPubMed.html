@@ -105,7 +105,7 @@ default)</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">psichomics</span><span class="fu">:::</span><span class="fu">queryPubMed</span><span class="op">(</span><span class="st">"BRCA1"</span>, <span class="st">"cancer"</span>, <span class="st">"adrenocortical carcinoma"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $search</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $search$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "18980"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "19197"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $search$retmax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3"</span>
@@ -114,689 +114,437 @@ default)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "0"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $search$idlist</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "36166741" "33210232" "35563746"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "25329591" "22127115" "15546503"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationset</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                       from</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                    BRCA1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2                   cancer</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3 adrenocortical carcinoma</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                               to</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                "genes, brca1"[MeSH Terms] OR ("genes"[All Fields] AND "brca1"[All Fields]) OR "brca1 genes"[All Fields] OR "brca1"[All Fields]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                     "neoplasms"[MeSH Terms] OR "neoplasms"[All Fields] OR "cancer"[All Fields]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 "adrenocortical carcinoma"[MeSH Terms] OR ("adrenocortical"[All Fields] AND "carcinoma"[All Fields]) OR "adrenocortical carcinoma"[All Fields]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[1]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"genes, brca1\"[MeSH Terms]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[1]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MeSH Terms"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[1]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "6322"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[1]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Y"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[2]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"genes\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[2]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[2]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1459565"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[2]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[3]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"brca1\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[3]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[3]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "20567"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[3]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AND"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[5]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GROUP"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[6]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[7]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[7]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"brca1 genes\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[7]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[7]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "6373"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[7]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[8]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[9]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[9]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"brca1\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[9]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[9]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "20567"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[9]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[10]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[11]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GROUP"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[12]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[12]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"neoplasms\"[MeSH Terms]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[12]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MeSH Terms"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[12]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3757336"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[12]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Y"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[13]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[13]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"neoplasms\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[13]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[13]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3029947"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[13]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[14]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[15]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[15]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"cancer\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[15]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[15]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2777393"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[15]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[16]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[17]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GROUP"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[18]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[18]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"adrenocortical carcinoma\"[MeSH Terms]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[18]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "MeSH Terms"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[18]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1973"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[18]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Y"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[19]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[19]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"adrenocortical\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[19]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[19]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "23202"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[19]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[20]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[20]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"carcinoma\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[20]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[20]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "939909"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[20]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[21]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AND"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[22]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GROUP"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[23]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[24]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[24]]$term</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "\"adrenocortical carcinoma\"[All Fields]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[24]]$field</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "All Fields"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[24]]$count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3752"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[24]]$explode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "N"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[25]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[26]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GROUP"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[27]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "OR"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[28]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GROUP"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $search$translationstack[[29]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AND"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                                                                                                                             to</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                                                                     "brca1's"[All Fields] OR "genes, brca1"[MeSH Terms] OR ("genes"[All Fields] AND "brca1"[All Fields]) OR "brca1 genes"[All Fields] OR "brca1"[All Fields]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 "cancer's"[All Fields] OR "cancerated"[All Fields] OR "canceration"[All Fields] OR "cancerization"[All Fields] OR "cancerized"[All Fields] OR "cancerous"[All Fields] OR "neoplasms"[MeSH Terms] OR "neoplasms"[All Fields] OR "cancer"[All Fields] OR "cancers"[All Fields]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                                                                               "adrenocortical carcinoma"[MeSH Terms] OR ("adrenocortical"[All Fields] AND "carcinoma"[All Fields]) OR "adrenocortical carcinoma"[All Fields]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $search$querytranslation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(\"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) AND ((\"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields]) OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(\"brca1 s\"[All Fields] OR \"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1\"[All Fields]) AND (\"cancer s\"[All Fields] OR \"cancerated\"[All Fields] OR \"canceration\"[All Fields] OR \"cancerization\"[All Fields] OR \"cancerized\"[All Fields] OR \"cancerous\"[All Fields] OR \"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields] OR \"cancers\"[All Fields] OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$uid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "36166741"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$uid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "25329591"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$pubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2022 Sep"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$pubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2015"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$epubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$epubdate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Genet Test Mol Biomarkers"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Anticancer Agents Med Chem"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$authors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      name authtype clusterid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    Li J   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    Li P   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    Li J   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Yang H   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   Liu G   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  Shen P   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Jiang G   Author          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$authors</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           name authtype clusterid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Romagnolo AP   Author          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Romagnolo DF   Author          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    Selmin OI   Author          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$lastauthor</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Jiang G"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$lastauthor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Selmin OI"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$title</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Effects of the Methylation Levels for the Breast Cancer Associated Genes &lt;i&gt;BCSG1&lt;/i&gt; and &lt;i&gt;BRCA1&lt;/i&gt; on Cellular Proliferation and Migration."</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$title</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA1 as target for breast cancer prevention and therapy."</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$sorttitle</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "effects of the methylation levels for the breast cancer associated genes i bcsg1 i and i brca1 i on cellular proliferation and migration"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$sorttitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "brca1 as target for breast cancer prevention and therapy"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$volume</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "26"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$volume</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "15"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$issue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "9"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$issue</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$pages</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "422-429"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$pages</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "4-14"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$lang</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$lang</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "eng"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$nlmuniqueid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "101494210"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$nlmuniqueid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "101265649"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$issn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1945-0265"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$issn</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1871-5206"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$essn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1945-0257"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$essn</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1875-5992"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$pubtype</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Journal Article"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$pubtype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Journal Article" "Review"         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$recordstatus</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$recordstatus</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "PubMed - indexed for MEDLINE"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$pubstatus</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$pubstatus</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "4"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$articleids</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   idtype idtypen                  value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pubmed       1               36166741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    doi       3 10.1089/gtmb.2021.0304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    rid       8               36166741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    eid       8               36166741</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$articleids</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   idtype idtypen                             value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pubmed       1                          25329591</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    doi       3 10.2174/1871520614666141020153543</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    pii       4                  ACAMC-EPUB-62932</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$history</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$history</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   pubstatus             date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    entrez 2022/09/27 16:22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    pubmed 2022/09/28 06:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   medline 2022/09/30 06:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  received 2014/09/05 00:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   revised 2014/10/14 00:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  accepted 2014/10/15 00:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4    entrez 2014/10/21 06:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    pubmed 2014/10/21 06:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   medline 2015/08/13 06:00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$references</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$references</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$attributes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$attributes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Has Abstract"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$pmcrefcount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$pmcrefcount</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$fulljournalname</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Genetic testing and molecular biomarkers"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$fulljournalname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Anti-cancer agents in medicinal chemistry"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$elocationid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "doi: 10.1089/gtmb.2021.0304"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$elocationid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$doctype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$doctype</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "citation"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$srccontriblist</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$srccontriblist</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$booktitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$booktitle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$medium</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$medium</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$edition</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$edition</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$publisherlocation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$publisherlocation</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$publishername</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$publishername</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$srcdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$srcdate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$reportnumber</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$reportnumber</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$availablefromurl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$availablefromurl</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$locationlabel</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$locationlabel</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$doccontriblist</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$doccontriblist</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$docdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$docdate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$bookname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$bookname</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$chapter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$chapter</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$sortpubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2022/09/01 00:00"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$sortpubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2015/01/01 00:00"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$sortfirstauthor</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Li J"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$sortfirstauthor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Romagnolo AP"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`36166741`$vernaculartitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`25329591`$vernaculartitle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$uid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "33210232"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$uid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "22127115"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$pubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2021 Jul"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$pubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2011 Nov"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$epubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2020 Nov 19"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$epubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Fam Cancer"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Discov Med"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$authors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          name authtype clusterid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Gensini F   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Sestini R   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   De Luca A   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     Pinna V   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   Daniele P   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  Orzalesi L   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Petrella MC   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  Porfirio B   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      Papi L   Author          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$authors</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        name authtype clusterid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  Narod SA   Author          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Salmena L   Author          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$lastauthor</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Papi L"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$lastauthor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Salmena L"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$title</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Early-onset malignant phyllodes breast tumor in a patient with germline pathogenic variants in NF1 and BRCA1 genes."</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$title</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA1 and BRCA2 mutations and breast cancer."</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$sorttitle</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "early onset malignant phyllodes breast tumor in a patient with germline pathogenic variants in nf1 and brca1 genes"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$sorttitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "brca1 and brca2 mutations and breast cancer"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$volume</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "20"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$volume</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "12"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$issue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$issue</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "66"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$pages</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "195-199"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$pages</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "445-53"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$lang</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$lang</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "eng"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$nlmuniqueid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "100898211"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$nlmuniqueid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "101250006"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$issn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1389-9600"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$issn</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1539-6509"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$essn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1573-7292"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$essn</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1944-7930"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$pubtype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$pubtype</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Journal Article"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$recordstatus</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$recordstatus</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "PubMed - indexed for MEDLINE"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$pubstatus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "256"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$pubstatus</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "4"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$articleids</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   idtype idtypen                      value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pubmed       1                   33210232</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    doi       3 10.1007/s10689-020-00217-x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    pii       4 10.1007/s10689-020-00217-x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    rid       8                   33210232</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    eid       8                   33210232</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$articleids</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   idtype idtypen    value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pubmed       1 22127115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$history</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$history</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   pubstatus             date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  received 2020/04/22 00:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  accepted 2020/11/10 00:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    pubmed 2020/11/20 06:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   medline 2021/12/15 06:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    entrez 2020/11/19 05:52</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    entrez 2011/12/01 06:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    pubmed 2011/12/01 06:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   medline 2012/04/04 06:00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$references</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$references</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$attributes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$attributes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Has Abstract"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$pmcrefcount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$pmcrefcount</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$fulljournalname</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Familial cancer"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$fulljournalname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Discovery medicine"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$elocationid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "doi: 10.1007/s10689-020-00217-x"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$elocationid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$doctype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$doctype</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "citation"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$srccontriblist</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$srccontriblist</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$booktitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$booktitle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$medium</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$medium</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$edition</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$edition</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$publisherlocation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$publisherlocation</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$publishername</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$publishername</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$srcdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$srcdate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$reportnumber</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$reportnumber</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$availablefromurl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$availablefromurl</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$locationlabel</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$locationlabel</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$doccontriblist</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$doccontriblist</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$docdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$docdate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$bookname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$bookname</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$chapter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$chapter</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$sortpubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2021/07/01 00:00"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$sortpubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2011/11/01 00:00"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$sortfirstauthor</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Gensini F"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$sortfirstauthor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Narod SA"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`33210232`$vernaculartitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`22127115`$vernaculartitle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$uid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "35563746"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$uid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "15546503"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$pubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2022 Apr 24"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$pubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2004 Nov"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$epubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2022 Apr 24"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$epubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Cells"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Cancer Sci"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$authors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            name authtype clusterid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      Sigala S   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      Bothou C   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      Penton D   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       Abate A   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    Peitzsch M   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   Cosentini D   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   Tiberio GAM   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  Bornstein SR   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9     Berruti A   Author          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     Hantel C   Author          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$authors</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        name authtype clusterid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Yoshida K   Author          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    Miki Y   Author          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$lastauthor</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Hantel C"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$lastauthor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Miki Y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$title</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "A Comprehensive Investigation of Steroidogenic Signaling in Classical and New Experimental Cell Models of Adrenocortical Carcinoma."</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$title</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Role of BRCA1 and BRCA2 as regulators of DNA repair, transcription, and cell cycle in response to DNA damage."</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$sorttitle</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "comprehensive investigation of steroidogenic signaling in classical and new experimental cell models of adrenocortical carcinoma"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$sorttitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "role of brca1 and brca2 as regulators of dna repair transcription and cell cycle in response to dna damage"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$volume</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$volume</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "95"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$issue</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "11"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$issue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "9"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$pages</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "866-71"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$pages</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$lang</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$lang</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "eng"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$nlmuniqueid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "101600052"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$nlmuniqueid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "101168776"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$issn</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$issn</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1347-9032"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$essn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$essn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2073-4409"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$pubtype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Journal Article" "Review"         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$pubtype</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Journal Article"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$recordstatus</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$recordstatus</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "PubMed - indexed for MEDLINE"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$pubstatus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$pubstatus</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "4"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$articleids</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   idtype idtypen                 value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pubmed       1              35563746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    pii       4         cells11091439</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    doi       3 10.3390/cells11091439</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    pmc       8            PMC9103477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    rid       8              35563746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    eid       8              35563746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  pmcid       5   pmc-id: PMC9103477;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$articleids</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   idtype idtypen                              value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 pubmed       1                           15546503</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    doi       3 10.1111/j.1349-7006.2004.tb02195.x</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$history</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$history</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   pubstatus             date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  received 2022/03/14 00:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   revised 2022/04/20 00:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  accepted 2022/04/22 00:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    entrez 2022/05/14 01:08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    pubmed 2022/05/15 06:00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   medline 2022/05/18 06:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    pubmed 2004/11/18 09:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   medline 2005/01/15 09:00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    entrez 2004/11/18 09:00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$references</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$references</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$attributes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$attributes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Has Abstract"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$pmcrefcount</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$pmcrefcount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$fulljournalname</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Cells"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$fulljournalname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Cancer science"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$elocationid</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "pii: 1439. doi: 10.3390/cells11091439"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$elocationid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$doctype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$doctype</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "citation"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$srccontriblist</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$srccontriblist</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$booktitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$booktitle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$medium</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$medium</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$edition</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$edition</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$publisherlocation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$publisherlocation</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$publishername</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$publishername</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$srcdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$srcdate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$reportnumber</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$reportnumber</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$availablefromurl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$availablefromurl</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$locationlabel</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$locationlabel</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$doccontriblist</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$doccontriblist</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$docdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$docdate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$bookname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$bookname</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$chapter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$chapter</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$sortpubdate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2022/04/24 00:00"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$sortpubdate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2004/11/01 00:00"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$sortfirstauthor</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Sigala S"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$sortfirstauthor</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Yoshida K"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $`35563746`$vernaculartitle</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $`15546503`$vernaculartitle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] ""</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
