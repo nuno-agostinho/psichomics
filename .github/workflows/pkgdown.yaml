@@ -28,7 +28,9 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
       
       - uses: r-lib/actions/check-r-package@v2
-      
+        with:
+          error-on: '"error"'
+            
       - name: Cache R packages
         uses: actions/cache@v3
         with:
