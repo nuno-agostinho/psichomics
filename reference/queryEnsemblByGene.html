@@ -112,251 +112,316 @@ identifier)</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">queryEnsemblByGene</span><span class="op">(</span><span class="st">"BRCA1"</span>, <span class="st">"human"</span>, <span class="st">"hg19"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENSG00000012048"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $biotype</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "protein_coding"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $Transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    seq_region_name  Translation.id Translation.Parent Translation.version</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               17 ENSP00000350283    ENST00000357654                   3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               17 ENSP00000417148    ENST00000468300                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3               17 ENSP00000465818    ENST00000586385                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4               17 ENSP00000467329    ENST00000591534                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5               17 ENSP00000465347    ENST00000591849                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6               17 ENSP00000418775    ENST00000493795                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7               17 ENSP00000418960    ENST00000471181                   2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8               17 ENSP00000418548    ENST00000461221                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9               17 ENSP00000420705    ENST00000491747                   2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10              17 ENSP00000419481    ENST00000484087                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11              17 ENSP00000420412    ENST00000478531                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12              17 ENSP00000418819    ENST00000493919                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13              17            &lt;NA&gt;               &lt;NA&gt;                  NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14              17 ENSP00000418212    ENST00000487825                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15              17 ENSP00000417241    ENST00000461574                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16              17            &lt;NA&gt;               &lt;NA&gt;                  NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17              17 ENSP00000397145    ENST00000412061                   3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18              17 ENSP00000419274    ENST00000470026                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19              17 ENSP00000419988    ENST00000477152                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20              17 ENSP00000420253    ENST00000492859                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21              17 ENSP00000418986    ENST00000497488                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22              17 ENSP00000419103    ENST00000494123                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23              17 ENSP00000420201    ENST00000473961                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24              17 ENSP00000417554    ENST00000476777                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25              17 ENSP00000417988    ENST00000461798                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26              17 ENSP00000420781    ENST00000489037                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27              17 ENSP00000326002    ENST00000354071                   6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28              17 ENSP00000312236    ENST00000352993                   5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29              17 ENSP00000246907    ENST00000346315                   4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30              17 ENSP00000338007    ENST00000351666                   3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31              17 ENSP00000310938    ENST00000309486                   4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.length Translation.db_type Translation.start Translation.end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                1863                core          41197695        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                 699                core          41197801        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                 173                core          41197695        41277202</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                 354                core          41197695        41226495</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                  96                core          41197695        41202109</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                1816                core          41197695        41258543</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                1884                core          41197695        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                  63                core          41256972        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 759                core          41197695        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10                498                core          41215361        41256933</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                623                core          41215361        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                572                core          41215377        41258543</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                 NA                &lt;NA&gt;                NA              NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14                266                core          41228505        41256933</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15                242                core          41228554        41243841</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                 NA                &lt;NA&gt;                NA              NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17                437                core          41245587        41247883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18                649                core          41245601        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                622                core          41245603        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20                 59                core          41262552        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21                177                core          41246129        41246659</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22                473                core          41246129        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23                319                core          41246187        41256908</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24                222                core          41247863        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25                 63                core          41256972        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26                 98                core          41256206        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27               1598                core          41197695        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28                721                core          41197695        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29               1624                core          41197695        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30                680                core          41197695        41276113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31               1567                core          41197695        41246659</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.object_type Translation.species display_name          Parent</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              Translation               human    BRCA1-001 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2              Translation               human    BRCA1-007 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3              Translation               human    BRCA1-023 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4              Translation               human    BRCA1-024 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5              Translation               human    BRCA1-025 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6              Translation               human    BRCA1-006 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7              Translation               human    BRCA1-005 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8              Translation               human    BRCA1-010 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9              Translation               human    BRCA1-014 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10             Translation               human    BRCA1-015 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11             Translation               human    BRCA1-009 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12             Translation               human    BRCA1-008 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                    &lt;NA&gt;                &lt;NA&gt;    BRCA1-021 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14             Translation               human    BRCA1-019 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15             Translation               human    BRCA1-022 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                    &lt;NA&gt;                &lt;NA&gt;    BRCA1-012 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17             Translation               human    BRCA1-026 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18             Translation               human    BRCA1-011 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19             Translation               human    BRCA1-004 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20             Translation               human    BRCA1-002 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21             Translation               human    BRCA1-003 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22             Translation               human    BRCA1-013 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23             Translation               human    BRCA1-018 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24             Translation               human    BRCA1-017 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25             Translation               human    BRCA1-020 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26             Translation               human    BRCA1-016 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27             Translation               human    BRCA1-205 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28             Translation               human    BRCA1-204 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29             Translation               human    BRCA1-202 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30             Translation               human    BRCA1-203 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31             Translation               human    BRCA1-201 ENSG00000012048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    object_type is_canonical      end strand         Exon</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Transcript            0 41277387     -1 c(1, 1, ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Transcript            0 41277468     -1 c("GRCh3....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   Transcript            0 41277346     -1 c("ENSE0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   Transcript            0 41277346     -1 c("GRCh3....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   Transcript            0 41277346     -1 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   Transcript            0 41277419     -1 c(1, 1, ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   Transcript            1 41277500     -1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   Transcript            0 41277305     -1 c(1, 1, ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   Transcript            0 41277373     -1 c(-1, -1....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10  Transcript            0 41256933     -1 c("Exon"....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11  Transcript            0 41277376     -1 c("ENSE0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12  Transcript            0 41277419     -1 c(412774....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13  Transcript            0 41223083     -1 c(1, 1),....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14  Transcript            0 41256933     -1 c(-1, -1....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  Transcript            0 41243841     -1 c("human....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16  Transcript            0 41277332     -1 c("ENSE0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17  Transcript            0 41247883     -1 c("human....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18  Transcript            0 41277340     -1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19  Transcript            0 41277381     -1 c("ENSE0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20  Transcript            0 41277317     -1 c(412773....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21  Transcript            0 41277317     -1 c(1, 1),....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22  Transcript            0 41277467     -1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23  Transcript            0 41256908     -1 c(-1, -1....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24  Transcript            0 41277370     -1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25  Transcript            0 41277387     -1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26  Transcript            0 41277338     -1 c("ENSE0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27  Transcript            0 41277500     -1 c("human....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28  Transcript            0 41277500     -1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29  Transcript            0 41277468     -1 c("core"....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30  Transcript            0 41276132     -1 c(-1, -1....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31  Transcript            0 41277468     -1 c("human....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    biotype version              id species    start db_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           protein_coding       3 ENST00000357654   human 41196312    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           protein_coding       1 ENST00000468300   human 41196822    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           protein_coding       1 ENST00000586385   human 41197580    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           protein_coding       1 ENST00000591534   human 41197580    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           protein_coding       1 ENST00000591849   human 41197580    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           protein_coding       1 ENST00000493795   human 41197646    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           protein_coding       2 ENST00000471181   human 41197646    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  nonsense_mediated_decay       1 ENST00000461221   human 41197695    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9           protein_coding       2 ENST00000491747   human 41197695    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10          protein_coding       1 ENST00000484087   human 41215361    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11          protein_coding       1 ENST00000478531   human 41215361    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12          protein_coding       1 ENST00000493919   human 41215377    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13         retained_intron       1 ENST00000472490   human 41219291    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14          protein_coding       1 ENST00000487825   human 41228505    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15          protein_coding       1 ENST00000461574   human 41228554    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         retained_intron       1 ENST00000467274   human 41243115    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17          non_stop_decay       3 ENST00000412061   human 41245587    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18          protein_coding       1 ENST00000470026   human 41245601    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19          protein_coding       1 ENST00000477152   human 41245603    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20 nonsense_mediated_decay       1 ENST00000492859   human 41246129    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21          protein_coding       1 ENST00000497488   human 41246129    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22          protein_coding       1 ENST00000494123   human 41246129    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23          protein_coding       1 ENST00000473961   human 41246187    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24          protein_coding       1 ENST00000476777   human 41247863    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25 nonsense_mediated_decay       1 ENST00000461798   human 41251848    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26          protein_coding       1 ENST00000489037   human 41256206    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27          protein_coding       3 ENST00000354071   human 41196313    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28          protein_coding       3 ENST00000352993   human 41196313    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29          protein_coding       3 ENST00000346315   human 41196313    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30          protein_coding       3 ENST00000351666   human 41196313    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31          protein_coding       4 ENST00000309486   human 41196313    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            source assembly_name                logic_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  ensembl_havana        GRCh37 ensembl_havana_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  ensembl_havana        GRCh37 ensembl_havana_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  ensembl_havana        GRCh37 ensembl_havana_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  ensembl_havana        GRCh37 ensembl_havana_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8          havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9          havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26         havana        GRCh37    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27        ensembl        GRCh37   ensembl_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28        ensembl        GRCh37   ensembl_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29        ensembl        GRCh37   ensembl_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30        ensembl        GRCh37   ensembl_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31        ensembl        GRCh37   ensembl_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $assembly_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GRCh37"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $canonical_transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENST00000471181.2"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $logic_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana_gene_homo_sapiens_37"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $display_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $db_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "core"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $start</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41196312</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "human"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $strand</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $db_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "core"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $Transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    seq_region_name species                 biotype object_type assembly_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8               17   human nonsense_mediated_decay  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9               17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13              17   human         retained_intron  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16              17   human         retained_intron  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17              17   human          non_stop_decay  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20              17   human nonsense_mediated_decay  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25              17   human nonsense_mediated_decay  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31              17   human          protein_coding  Transcript        GRCh37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 id      end         Exon         source version db_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  ENST00000357654 41277387 c("ENSE0.... ensembl_havana       3    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  ENST00000468300 41277468 c("human.... ensembl_havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  ENST00000586385 41277346 c(412773....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  ENST00000591534 41277346 c(1, 1, ....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  ENST00000591849 41277346 c("core"....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  ENST00000493795 41277419 c("ENSE0.... ensembl_havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  ENST00000471181 41277500 c("ENSE0.... ensembl_havana       2    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  ENST00000461221 41277305 c("core"....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  ENST00000491747 41277373 c(412773....         havana       2    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 ENST00000484087 41256933 c("ENSE0....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 ENST00000478531 41277376 c(-1, -1....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 ENST00000493919 41277419 c("17", ....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 ENST00000472490 41223083 c("17", ....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 ENST00000487825 41256933 c("human....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 ENST00000461574 41243841 c(-1, -1....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 ENST00000467274 41277332 c(412773....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 ENST00000412061 41247883 c("ENSE0....         havana       3    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 ENST00000470026 41277340 c(412773....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 ENST00000477152 41277381 c(-1, -1....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 ENST00000492859 41277317 c("ENSE0....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 ENST00000497488 41277317 c("ENSE0....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 ENST00000494123 41277467 c(412774....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 ENST00000473961 41256908 c("ENSE0....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 ENST00000476777 41277370 c("ENSE0....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 ENST00000461798 41277387 c("ENSE0....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 ENST00000489037 41277338 c(1, 1, ....         havana       1    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 ENST00000354071 41277500 c(412775....        ensembl       3    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 ENST00000352993 41277500 c(412775....        ensembl       3    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 ENST00000346315 41277468 c(1, 1, ....        ensembl       3    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 ENST00000351666 41276132 c(1, 1, ....        ensembl       3    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 ENST00000309486 41277468 c("ENSE0....        ensembl       4    core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       start strand          Parent is_canonical display_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  41196312     -1 ENSG00000012048            0    BRCA1-001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  41196822     -1 ENSG00000012048            0    BRCA1-007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  41197580     -1 ENSG00000012048            0    BRCA1-023</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  41197580     -1 ENSG00000012048            0    BRCA1-024</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  41197580     -1 ENSG00000012048            0    BRCA1-025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  41197646     -1 ENSG00000012048            0    BRCA1-006</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  41197646     -1 ENSG00000012048            1    BRCA1-005</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  41197695     -1 ENSG00000012048            0    BRCA1-010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  41197695     -1 ENSG00000012048            0    BRCA1-014</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 41215361     -1 ENSG00000012048            0    BRCA1-015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 41215361     -1 ENSG00000012048            0    BRCA1-009</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 41215377     -1 ENSG00000012048            0    BRCA1-008</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 41219291     -1 ENSG00000012048            0    BRCA1-021</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 41228505     -1 ENSG00000012048            0    BRCA1-019</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 41228554     -1 ENSG00000012048            0    BRCA1-022</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 41243115     -1 ENSG00000012048            0    BRCA1-012</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 41245587     -1 ENSG00000012048            0    BRCA1-026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 41245601     -1 ENSG00000012048            0    BRCA1-011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 41245603     -1 ENSG00000012048            0    BRCA1-004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 41246129     -1 ENSG00000012048            0    BRCA1-002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 41246129     -1 ENSG00000012048            0    BRCA1-003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 41246129     -1 ENSG00000012048            0    BRCA1-013</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 41246187     -1 ENSG00000012048            0    BRCA1-018</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 41247863     -1 ENSG00000012048            0    BRCA1-017</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 41251848     -1 ENSG00000012048            0    BRCA1-020</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 41256206     -1 ENSG00000012048            0    BRCA1-016</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 41196313     -1 ENSG00000012048            0    BRCA1-205</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 41196313     -1 ENSG00000012048            0    BRCA1-204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 41196313     -1 ENSG00000012048            0    BRCA1-202</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 41196313     -1 ENSG00000012048            0    BRCA1-203</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 41196313     -1 ENSG00000012048            0    BRCA1-201</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   logic_name Translation.species Translation.object_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  ensembl_havana_transcript               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  ensembl_havana_transcript               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  ensembl_havana_transcript               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  ensembl_havana_transcript               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13    havana_homo_sapiens_37                &lt;NA&gt;                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16    havana_homo_sapiens_37                &lt;NA&gt;                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26    havana_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27   ensembl_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28   ensembl_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29   ensembl_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30   ensembl_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31   ensembl_homo_sapiens_37               human             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.version Translation.start Translation.db_type Translation.Parent</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    3          41197695                core    ENST00000357654</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    1          41197801                core    ENST00000468300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    1          41197695                core    ENST00000586385</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                    1          41197695                core    ENST00000591534</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                    1          41197695                core    ENST00000591849</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                    1          41197695                core    ENST00000493795</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                    2          41197695                core    ENST00000471181</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                    1          41256972                core    ENST00000461221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                    2          41197695                core    ENST00000491747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                   1          41215361                core    ENST00000484087</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11                   1          41215361                core    ENST00000478531</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12                   1          41215377                core    ENST00000493919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13                  NA                NA                &lt;NA&gt;               &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14                   1          41228505                core    ENST00000487825</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15                   1          41228554                core    ENST00000461574</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16                  NA                NA                &lt;NA&gt;               &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17                   3          41245587                core    ENST00000412061</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18                   1          41245601                core    ENST00000470026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19                   1          41245603                core    ENST00000477152</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20                   1          41262552                core    ENST00000492859</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21                   1          41246129                core    ENST00000497488</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22                   1          41246129                core    ENST00000494123</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23                   1          41246187                core    ENST00000473961</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24                   1          41247863                core    ENST00000476777</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25                   1          41256972                core    ENST00000461798</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26                   1          41256206                core    ENST00000489037</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27                   6          41197695                core    ENST00000354071</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28                   5          41197695                core    ENST00000352993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29                   4          41197695                core    ENST00000346315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30                   3          41197695                core    ENST00000351666</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31                   4          41197695                core    ENST00000309486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.end  Translation.id Translation.length</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         41276113 ENSP00000350283               1863</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         41276113 ENSP00000417148                699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         41277202 ENSP00000465818                173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         41226495 ENSP00000467329                354</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         41202109 ENSP00000465347                 96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         41258543 ENSP00000418775               1816</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7         41276113 ENSP00000418960               1884</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         41276113 ENSP00000418548                 63</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9         41276113 ENSP00000420705                759</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10        41256933 ENSP00000419481                498</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11        41276113 ENSP00000420412                623</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12        41258543 ENSP00000418819                572</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13              NA            &lt;NA&gt;                 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14        41256933 ENSP00000418212                266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15        41243841 ENSP00000417241                242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16              NA            &lt;NA&gt;                 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17        41247883 ENSP00000397145                437</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18        41276113 ENSP00000419274                649</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19        41276113 ENSP00000419988                622</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20        41276113 ENSP00000420253                 59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21        41246659 ENSP00000418986                177</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22        41276113 ENSP00000419103                473</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23        41256908 ENSP00000420201                319</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24        41276113 ENSP00000417554                222</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25        41276113 ENSP00000417988                 63</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26        41276113 ENSP00000420781                 98</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27        41276113 ENSP00000326002               1598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28        41276113 ENSP00000312236                721</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29        41276113 ENSP00000246907               1624</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30        41276113 ENSP00000338007                680</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31        41246659 ENSP00000310938               1567</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $description</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "breast cancer 1, early onset [Source:HGNC Symbol;Acc:1100]"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $display_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENSG00000012048"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41277500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "human"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $biotype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "protein_coding"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seq_region_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "17"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $strand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $canonical_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENST00000471181.2"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41277500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $assembly_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GRCh37"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $object_type</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Gene"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">queryEnsemblByGene</span><span class="op">(</span><span class="st">"ENSG00000139618"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $logic_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana_gene_homo_sapiens_37"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "homo_sapiens"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 32973805</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $seq_region_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "13"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $canonical_transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENST00000544455.1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $start</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 32889611</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $Transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   version              id display_name    start          Parent      end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       3 ENST00000380152    BRCA2-001 32889611 ENSG00000139618 32973347</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2 ENST00000530893    BRCA2-003 32889642 ENSG00000139618 32907428</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       1 ENST00000528762    BRCA2-005 32945108 ENSG00000139618 32953632</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       1 ENST00000470094    BRCA2-002 32953977 ENSG00000139618 32972409</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       1 ENST00000533776    BRCA2-006 32970946 ENSG00000139618 32972585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       1 ENST00000544455    BRCA2-201 32889617 ENSG00000139618 32973805</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   seq_region_name      species         Exon         source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              13 homo_sapiens c(328896.... ensembl_havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2              13 homo_sapiens c(1, 1, ....         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3              13 homo_sapiens c(1, 1, ....         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4              13 homo_sapiens c("13", ....         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5              13 homo_sapiens c(329709....         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6              13 homo_sapiens c(328896....        ensembl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   biotype strand assembly_name Translation.end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          protein_coding      1        GRCh37        32972907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          protein_coding      1        GRCh37        32907428</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 nonsense_mediated_decay      1        GRCh37        32950807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 nonsense_mediated_decay      1        GRCh37        32970229</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         retained_intron      1        GRCh37              NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          protein_coding      1        GRCh37        32972907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Translation.species Translation.db_type Translation.object_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        homo_sapiens                core             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        homo_sapiens                core             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        homo_sapiens                core             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        homo_sapiens                core             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                &lt;NA&gt;                &lt;NA&gt;                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        homo_sapiens                core             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Translation.length Translation.version  Translation.id Translation.Parent</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               3418                   3 ENSP00000369497    ENST00000380152</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                481                   2 ENSP00000435699    ENST00000530893</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                 64                   1 ENSP00000433168    ENST00000528762</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                186                   1 ENSP00000434898    ENST00000470094</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                 NA                  NA            &lt;NA&gt;               &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6               3418                   1 ENSP00000439902    ENST00000544455</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Translation.start is_canonical object_type db_type                logic_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          32890598            0  Transcript    core ensembl_havana_transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          32899266            0  Transcript    core    havana_homo_sapiens_37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          32945108            0  Transcript    core    havana_homo_sapiens_37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          32953977            0  Transcript    core    havana_homo_sapiens_37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                NA            0  Transcript    core    havana_homo_sapiens_37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          32890598            1  Transcript    core   ensembl_homo_sapiens_37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENSG00000139618"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $display_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA2"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $db_type</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "core"</span>
@@ -367,329 +432,264 @@ identifier)</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $description</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "breast cancer 2, early onset [Source:HGNC Symbol;Acc:1101]"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $assembly_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GRCh37"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $strand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $biotype</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "protein_coding"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 32973805</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $seq_region_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "13"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "homo_sapiens"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $display_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA2"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENSG00000139618"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $Transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   version              id display_name    start          Parent seq_region_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       3 ENST00000380152    BRCA2-001 32889611 ENSG00000139618              13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2 ENST00000530893    BRCA2-003 32889642 ENSG00000139618              13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       1 ENST00000528762    BRCA2-005 32945108 ENSG00000139618              13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       1 ENST00000470094    BRCA2-002 32953977 ENSG00000139618              13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       1 ENST00000533776    BRCA2-006 32970946 ENSG00000139618              13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       1 ENST00000544455    BRCA2-201 32889617 ENSG00000139618              13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        end      species         Exon         source                 biotype</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 32973347 homo_sapiens c("13", .... ensembl_havana          protein_coding</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 32907428 homo_sapiens c(328896....         havana          protein_coding</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 32953632 homo_sapiens c(329452....         havana nonsense_mediated_decay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 32972409 homo_sapiens c("13", ....         havana nonsense_mediated_decay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 32972585 homo_sapiens c("Exon"....         havana         retained_intron</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 32973805 homo_sapiens c("13", ....        ensembl          protein_coding</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   assembly_name strand Translation.end Translation.db_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        GRCh37      1        32972907                core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        GRCh37      1        32907428                core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        GRCh37      1        32950807                core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        GRCh37      1        32970229                core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        GRCh37      1              NA                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6        GRCh37      1        32972907                core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Translation.object_type Translation.species Translation.length</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             Translation        homo_sapiens               3418</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2             Translation        homo_sapiens                481</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3             Translation        homo_sapiens                 64</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4             Translation        homo_sapiens                186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                    &lt;NA&gt;                &lt;NA&gt;                 NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6             Translation        homo_sapiens               3418</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Translation.version  Translation.id Translation.Parent Translation.start</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   3 ENSP00000369497    ENST00000380152          32890598</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   2 ENSP00000435699    ENST00000530893          32899266</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                   1 ENSP00000433168    ENST00000528762          32945108</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                   1 ENSP00000434898    ENST00000470094          32953977</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                  NA            &lt;NA&gt;               &lt;NA&gt;                NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                   1 ENSP00000439902    ENST00000544455          32890598</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   db_type object_type is_canonical                logic_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    core  Transcript            0 ensembl_havana_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    core  Transcript            0    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    core  Transcript            0    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    core  Transcript            0    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    core  Transcript            0    havana_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    core  Transcript            1   ensembl_homo_sapiens_37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $start</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 32889611</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $canonical_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENST00000544455.1"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="st">"SE_17_-_41251792_41249306_41249261_41246877_BRCA1"</span></span></span>
-<span class="r-in"><span><span class="fu">queryEnsemblByEvent</span><span class="op">(</span><span class="va">event</span>, species<span class="op">=</span><span class="st">"human"</span>, assembly<span class="op">=</span><span class="st">"hg19"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENSG00000012048"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41277500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $strand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $seq_region_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "17"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $Transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.species Translation.end  Translation.id Translation.version</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                human        41276113 ENSP00000350283                   3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                human        41276113 ENSP00000417148                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                human        41277202 ENSP00000465818                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                human        41226495 ENSP00000467329                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                human        41202109 ENSP00000465347                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                human        41258543 ENSP00000418775                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                human        41276113 ENSP00000418960                   2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                human        41276113 ENSP00000418548                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                human        41276113 ENSP00000420705                   2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10               human        41256933 ENSP00000419481                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11               human        41276113 ENSP00000420412                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12               human        41258543 ENSP00000418819                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                &lt;NA&gt;              NA            &lt;NA&gt;                  NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14               human        41256933 ENSP00000418212                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15               human        41243841 ENSP00000417241                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                &lt;NA&gt;              NA            &lt;NA&gt;                  NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17               human        41247883 ENSP00000397145                   3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18               human        41276113 ENSP00000419274                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19               human        41276113 ENSP00000419988                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20               human        41276113 ENSP00000420253                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21               human        41246659 ENSP00000418986                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22               human        41276113 ENSP00000419103                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23               human        41256908 ENSP00000420201                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24               human        41276113 ENSP00000417554                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25               human        41276113 ENSP00000417988                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26               human        41276113 ENSP00000420781                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27               human        41276113 ENSP00000326002                   6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28               human        41276113 ENSP00000312236                   5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29               human        41276113 ENSP00000246907                   4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30               human        41276113 ENSP00000338007                   3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31               human        41246659 ENSP00000310938                   4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.db_type Translation.object_type Translation.Parent</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 core             Translation    ENST00000357654</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                 core             Translation    ENST00000468300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                 core             Translation    ENST00000586385</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                 core             Translation    ENST00000591534</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                 core             Translation    ENST00000591849</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                 core             Translation    ENST00000493795</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                 core             Translation    ENST00000471181</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                 core             Translation    ENST00000461221</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 core             Translation    ENST00000491747</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10                core             Translation    ENST00000484087</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                core             Translation    ENST00000478531</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                core             Translation    ENST00000493919</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                &lt;NA&gt;                    &lt;NA&gt;               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14                core             Translation    ENST00000487825</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15                core             Translation    ENST00000461574</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                &lt;NA&gt;                    &lt;NA&gt;               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17                core             Translation    ENST00000412061</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18                core             Translation    ENST00000470026</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                core             Translation    ENST00000477152</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20                core             Translation    ENST00000492859</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21                core             Translation    ENST00000497488</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22                core             Translation    ENST00000494123</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23                core             Translation    ENST00000473961</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24                core             Translation    ENST00000476777</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25                core             Translation    ENST00000461798</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26                core             Translation    ENST00000489037</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27                core             Translation    ENST00000354071</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28                core             Translation    ENST00000352993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29                core             Translation    ENST00000346315</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30                core             Translation    ENST00000351666</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31                core             Translation    ENST00000309486</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.length Translation.start    start          Parent is_canonical</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                1863          41197695 41196312 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                 699          41197801 41196822 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                 173          41197695 41197580 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                 354          41197695 41197580 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                  96          41197695 41197580 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                1816          41197695 41197646 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                1884          41197695 41197646 ENSG00000012048            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                  63          41256972 41197695 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 759          41197695 41197695 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10                498          41215361 41215361 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                623          41215361 41215361 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                572          41215377 41215377 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                 NA                NA 41219291 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14                266          41228505 41228505 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15                242          41228554 41228554 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                 NA                NA 41243115 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17                437          41245587 41245587 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18                649          41245601 41245601 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                622          41245603 41245603 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20                 59          41262552 41246129 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21                177          41246129 41246129 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22                473          41246129 41246129 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23                319          41246187 41246187 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24                222          41247863 41247863 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25                 63          41256972 41251848 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26                 98          41256206 41256206 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27               1598          41197695 41196313 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28                721          41197695 41196313 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29               1624          41197695 41196313 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30                680          41197695 41196313 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31               1567          41197695 41196313 ENSG00000012048            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    biotype species object_type version         Exon</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           protein_coding   human  Transcript       3 c("GRCh3....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           protein_coding   human  Transcript       1 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           protein_coding   human  Transcript       1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           protein_coding   human  Transcript       1 c("GRCh3....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           protein_coding   human  Transcript       1 c(-1, -1....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           protein_coding   human  Transcript       1 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           protein_coding   human  Transcript       2 c("GRCh3....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  nonsense_mediated_decay   human  Transcript       1 c("core"....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9           protein_coding   human  Transcript       2 c(1, 1, ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10          protein_coding   human  Transcript       1 c(412568....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11          protein_coding   human  Transcript       1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12          protein_coding   human  Transcript       1 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13         retained_intron   human  Transcript       1 c(412229....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14          protein_coding   human  Transcript       1 c("GRCh3....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15          protein_coding   human  Transcript       1 c("core"....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         retained_intron   human  Transcript       1 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17          non_stop_decay   human  Transcript       3 c(412478....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18          protein_coding   human  Transcript       1 c("GRCh3....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19          protein_coding   human  Transcript       1 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20 nonsense_mediated_decay   human  Transcript       1 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21          protein_coding   human  Transcript       1 c("core"....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22          protein_coding   human  Transcript       1 c("core"....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23          protein_coding   human  Transcript       1 c(412569....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24          protein_coding   human  Transcript       1 c("17", ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25 nonsense_mediated_decay   human  Transcript       1 c(412773....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26          protein_coding   human  Transcript       1 c(1, 1, ....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27          protein_coding   human  Transcript       3 c(-1, -1....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28          protein_coding   human  Transcript       3 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29          protein_coding   human  Transcript       3 c("ENSE0....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30          protein_coding   human  Transcript       3 c(-1, -1....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31          protein_coding   human  Transcript       4 c(412772....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   logic_name assembly_name         source strand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  ensembl_havana_transcript        GRCh37 ensembl_havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  ensembl_havana_transcript        GRCh37 ensembl_havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5     havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  ensembl_havana_transcript        GRCh37 ensembl_havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  ensembl_havana_transcript        GRCh37 ensembl_havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8     havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9     havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26    havana_homo_sapiens_37        GRCh37         havana     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27   ensembl_homo_sapiens_37        GRCh37        ensembl     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28   ensembl_homo_sapiens_37        GRCh37        ensembl     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29   ensembl_homo_sapiens_37        GRCh37        ensembl     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30   ensembl_homo_sapiens_37        GRCh37        ensembl     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31   ensembl_homo_sapiens_37        GRCh37        ensembl     -1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    seq_region_name              id      end display_name db_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               17 ENST00000357654 41277387    BRCA1-001    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               17 ENST00000468300 41277468    BRCA1-007    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3               17 ENST00000586385 41277346    BRCA1-023    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4               17 ENST00000591534 41277346    BRCA1-024    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5               17 ENST00000591849 41277346    BRCA1-025    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6               17 ENST00000493795 41277419    BRCA1-006    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7               17 ENST00000471181 41277500    BRCA1-005    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8               17 ENST00000461221 41277305    BRCA1-010    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9               17 ENST00000491747 41277373    BRCA1-014    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10              17 ENST00000484087 41256933    BRCA1-015    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11              17 ENST00000478531 41277376    BRCA1-009    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12              17 ENST00000493919 41277419    BRCA1-008    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13              17 ENST00000472490 41223083    BRCA1-021    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14              17 ENST00000487825 41256933    BRCA1-019    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15              17 ENST00000461574 41243841    BRCA1-022    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16              17 ENST00000467274 41277332    BRCA1-012    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17              17 ENST00000412061 41247883    BRCA1-026    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18              17 ENST00000470026 41277340    BRCA1-011    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19              17 ENST00000477152 41277381    BRCA1-004    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20              17 ENST00000492859 41277317    BRCA1-002    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21              17 ENST00000497488 41277317    BRCA1-003    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22              17 ENST00000494123 41277467    BRCA1-013    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23              17 ENST00000473961 41256908    BRCA1-018    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24              17 ENST00000476777 41277370    BRCA1-017    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25              17 ENST00000461798 41277387    BRCA1-020    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26              17 ENST00000489037 41277338    BRCA1-016    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27              17 ENST00000354071 41277500    BRCA1-205    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28              17 ENST00000352993 41277500    BRCA1-204    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29              17 ENST00000346315 41277468    BRCA1-202    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30              17 ENST00000351666 41276132    BRCA1-203    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31              17 ENST00000309486 41277468    BRCA1-201    core</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $display_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA1"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $db_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "core"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $logic_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana_gene_homo_sapiens_37"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $source</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $biotype</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "protein_coding"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $strand</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $assembly_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GRCh37"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $canonical_transcript</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENST00000471181.2"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">event</span> <span class="op">&lt;-</span> <span class="st">"SE_17_-_41251792_41249306_41249261_41246877_BRCA1"</span></span></span>
+<span class="r-in"><span><span class="fu">queryEnsemblByEvent</span><span class="op">(</span><span class="va">event</span>, species<span class="op">=</span><span class="st">"human"</span>, assembly<span class="op">=</span><span class="st">"hg19"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $species</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "human"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "breast cancer 1, early onset [Source:HGNC Symbol;Acc:1100]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $logic_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana_gene_homo_sapiens_37"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $assembly_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GRCh37"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ensembl_havana"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $start</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41196312</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $db_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "core"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $version</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $object_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Gene"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $biotype</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "protein_coding"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $start</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41196312</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $Transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    display_name seq_region_name Translation.version Translation.length</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     BRCA1-001              17                   3               1863</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     BRCA1-007              17                   1                699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     BRCA1-023              17                   1                173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     BRCA1-024              17                   1                354</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     BRCA1-025              17                   1                 96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     BRCA1-006              17                   1               1816</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7     BRCA1-005              17                   2               1884</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     BRCA1-010              17                   1                 63</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     BRCA1-014              17                   2                759</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10    BRCA1-015              17                   1                498</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11    BRCA1-009              17                   1                623</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12    BRCA1-008              17                   1                572</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13    BRCA1-021              17                  NA                 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14    BRCA1-019              17                   1                266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15    BRCA1-022              17                   1                242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16    BRCA1-012              17                  NA                 NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17    BRCA1-026              17                   3                437</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18    BRCA1-011              17                   1                649</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19    BRCA1-004              17                   1                622</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20    BRCA1-002              17                   1                 59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21    BRCA1-003              17                   1                177</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22    BRCA1-013              17                   1                473</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23    BRCA1-018              17                   1                319</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24    BRCA1-017              17                   1                222</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25    BRCA1-020              17                   1                 63</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26    BRCA1-016              17                   1                 98</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27    BRCA1-205              17                   6               1598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28    BRCA1-204              17                   5                721</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29    BRCA1-202              17                   4               1624</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30    BRCA1-203              17                   3                680</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31    BRCA1-201              17                   4               1567</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     Translation.id Translation.Parent Translation.object_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  ENSP00000350283    ENST00000357654             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  ENSP00000417148    ENST00000468300             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  ENSP00000465818    ENST00000586385             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  ENSP00000467329    ENST00000591534             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  ENSP00000465347    ENST00000591849             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  ENSP00000418775    ENST00000493795             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  ENSP00000418960    ENST00000471181             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  ENSP00000418548    ENST00000461221             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  ENSP00000420705    ENST00000491747             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 ENSP00000419481    ENST00000484087             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 ENSP00000420412    ENST00000478531             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 ENSP00000418819    ENST00000493919             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13            &lt;NA&gt;               &lt;NA&gt;                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 ENSP00000418212    ENST00000487825             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 ENSP00000417241    ENST00000461574             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16            &lt;NA&gt;               &lt;NA&gt;                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 ENSP00000397145    ENST00000412061             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 ENSP00000419274    ENST00000470026             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 ENSP00000419988    ENST00000477152             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 ENSP00000420253    ENST00000492859             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 ENSP00000418986    ENST00000497488             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 ENSP00000419103    ENST00000494123             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 ENSP00000420201    ENST00000473961             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 ENSP00000417554    ENST00000476777             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 ENSP00000417988    ENST00000461798             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 ENSP00000420781    ENST00000489037             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 ENSP00000326002    ENST00000354071             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 ENSP00000312236    ENST00000352993             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 ENSP00000246907    ENST00000346315             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 ENSP00000338007    ENST00000351666             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 ENSP00000310938    ENST00000309486             Translation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Translation.species Translation.end Translation.start Translation.db_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                human        41276113          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                human        41276113          41197801                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                human        41277202          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                human        41226495          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                human        41202109          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                human        41258543          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                human        41276113          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                human        41276113          41256972                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                human        41276113          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10               human        41256933          41215361                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11               human        41276113          41215361                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12               human        41258543          41215377                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13                &lt;NA&gt;              NA                NA                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14               human        41256933          41228505                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15               human        41243841          41228554                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16                &lt;NA&gt;              NA                NA                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17               human        41247883          41245587                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18               human        41276113          41245601                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19               human        41276113          41245603                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20               human        41276113          41262552                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21               human        41246659          41246129                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22               human        41276113          41246129                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23               human        41256908          41246187                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24               human        41276113          41247863                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25               human        41276113          41256972                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26               human        41276113          41256206                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27               human        41276113          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28               human        41276113          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29               human        41276113          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30               human        41276113          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31               human        41246659          41197695                core</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Parent is_canonical object_type         Exon strand      end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  ENSG00000012048            0  Transcript c(412773....     -1 41277387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  ENSG00000012048            0  Transcript c("ENSE0....     -1 41277468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  ENSG00000012048            0  Transcript c("human....     -1 41277346</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  ENSG00000012048            0  Transcript c("17", ....     -1 41277346</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  ENSG00000012048            0  Transcript c("human....     -1 41277346</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  ENSG00000012048            0  Transcript c(1, 1, ....     -1 41277419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  ENSG00000012048            1  Transcript c("human....     -1 41277500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  ENSG00000012048            0  Transcript c("ENSE0....     -1 41277305</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  ENSG00000012048            0  Transcript c("ENSE0....     -1 41277373</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 ENSG00000012048            0  Transcript c("ENSE0....     -1 41256933</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 ENSG00000012048            0  Transcript c("ENSE0....     -1 41277376</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 ENSG00000012048            0  Transcript c("17", ....     -1 41277419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 ENSG00000012048            0  Transcript c(1, 1),....     -1 41223083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 ENSG00000012048            0  Transcript c("17", ....     -1 41256933</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 ENSG00000012048            0  Transcript c("ENSE0....     -1 41243841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 ENSG00000012048            0  Transcript c("ENSE0....     -1 41277332</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 ENSG00000012048            0  Transcript c(1, 1),....     -1 41247883</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 ENSG00000012048            0  Transcript c("core"....     -1 41277340</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 ENSG00000012048            0  Transcript c(-1, -1....     -1 41277381</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 ENSG00000012048            0  Transcript c("17", ....     -1 41277317</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 ENSG00000012048            0  Transcript c("ENSE0....     -1 41277317</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 ENSG00000012048            0  Transcript c("ENSE0....     -1 41277467</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 ENSG00000012048            0  Transcript c(1, 1, ....     -1 41256908</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 ENSG00000012048            0  Transcript c("ENSE0....     -1 41277370</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 ENSG00000012048            0  Transcript c("17", ....     -1 41277387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 ENSG00000012048            0  Transcript c("17", ....     -1 41277338</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 ENSG00000012048            0  Transcript c("ENSE0....     -1 41277500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 ENSG00000012048            0  Transcript c(1, 1, ....     -1 41277500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 ENSG00000012048            0  Transcript c("core"....     -1 41277468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 ENSG00000012048            0  Transcript c(412760....     -1 41276132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 ENSG00000012048            0  Transcript c(412774....     -1 41277468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    version                 biotype              id species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        3          protein_coding ENST00000357654   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        1          protein_coding ENST00000468300   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        1          protein_coding ENST00000586385   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        1          protein_coding ENST00000591534   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        1          protein_coding ENST00000591849   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        1          protein_coding ENST00000493795   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7        2          protein_coding ENST00000471181   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8        1 nonsense_mediated_decay ENST00000461221   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9        2          protein_coding ENST00000491747   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10       1          protein_coding ENST00000484087   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11       1          protein_coding ENST00000478531   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12       1          protein_coding ENST00000493919   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13       1         retained_intron ENST00000472490   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14       1          protein_coding ENST00000487825   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15       1          protein_coding ENST00000461574   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16       1         retained_intron ENST00000467274   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17       3          non_stop_decay ENST00000412061   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18       1          protein_coding ENST00000470026   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19       1          protein_coding ENST00000477152   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20       1 nonsense_mediated_decay ENST00000492859   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21       1          protein_coding ENST00000497488   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22       1          protein_coding ENST00000494123   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23       1          protein_coding ENST00000473961   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24       1          protein_coding ENST00000476777   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25       1 nonsense_mediated_decay ENST00000461798   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26       1          protein_coding ENST00000489037   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27       3          protein_coding ENST00000354071   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28       3          protein_coding ENST00000352993   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29       3          protein_coding ENST00000346315   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30       3          protein_coding ENST00000351666   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31       4          protein_coding ENST00000309486   human</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   logic_name assembly_name    start db_type         source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  ensembl_havana_transcript        GRCh37 41196312    core ensembl_havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  ensembl_havana_transcript        GRCh37 41196822    core ensembl_havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     havana_homo_sapiens_37        GRCh37 41197580    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     havana_homo_sapiens_37        GRCh37 41197580    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     havana_homo_sapiens_37        GRCh37 41197580    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  ensembl_havana_transcript        GRCh37 41197646    core ensembl_havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  ensembl_havana_transcript        GRCh37 41197646    core ensembl_havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     havana_homo_sapiens_37        GRCh37 41197695    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     havana_homo_sapiens_37        GRCh37 41197695    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10    havana_homo_sapiens_37        GRCh37 41215361    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11    havana_homo_sapiens_37        GRCh37 41215361    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12    havana_homo_sapiens_37        GRCh37 41215377    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13    havana_homo_sapiens_37        GRCh37 41219291    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14    havana_homo_sapiens_37        GRCh37 41228505    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15    havana_homo_sapiens_37        GRCh37 41228554    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16    havana_homo_sapiens_37        GRCh37 41243115    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17    havana_homo_sapiens_37        GRCh37 41245587    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18    havana_homo_sapiens_37        GRCh37 41245601    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19    havana_homo_sapiens_37        GRCh37 41245603    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20    havana_homo_sapiens_37        GRCh37 41246129    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21    havana_homo_sapiens_37        GRCh37 41246129    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22    havana_homo_sapiens_37        GRCh37 41246129    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23    havana_homo_sapiens_37        GRCh37 41246187    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24    havana_homo_sapiens_37        GRCh37 41247863    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25    havana_homo_sapiens_37        GRCh37 41251848    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26    havana_homo_sapiens_37        GRCh37 41256206    core         havana</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27   ensembl_homo_sapiens_37        GRCh37 41196313    core        ensembl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28   ensembl_homo_sapiens_37        GRCh37 41196313    core        ensembl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29   ensembl_homo_sapiens_37        GRCh37 41196313    core        ensembl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30   ensembl_homo_sapiens_37        GRCh37 41196313    core        ensembl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31   ensembl_homo_sapiens_37        GRCh37 41196313    core        ensembl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENSG00000012048"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $object_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Gene"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $strand</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $canonical_transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ENST00000471181.2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41277500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $display_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "BRCA1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $seq_region_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "17"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "breast cancer 1, early onset [Source:HGNC Symbol;Acc:1100]"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
