@@ -16,7 +16,7 @@ processButton(id, label, ..., class = "btn-primary")
   \describe{
     \item{\code{icon}}{An optional \code{\link[shiny:icon]{icon()}} to appear on the button.}
     \item{\code{width}}{The width of the input, e.g. \code{'400px'}, or \code{'100\%'};
-see \code{\link[shiny:reexports]{validateCssUnit()}}.}
+see \code{\link[shiny:validateCssUnit]{validateCssUnit()}}.}
   }}
 
 \item{class}{Character: class}

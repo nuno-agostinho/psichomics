@@ -410,6 +410,8 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 
 #' @inherit survival::survfit title details
 #' @inheritParams survdiffTerms
+#' @param formula \code{survTerms} object: survival terms obtained after
+#'   running \code{processSurvTerms} (see examples)
 #' @inheritDotParams survival::survdiff -formula -data
 #'
 #' @importFrom survival survfit

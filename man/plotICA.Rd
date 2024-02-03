@@ -39,6 +39,8 @@ symbols (default 0.9).}
 hovering over an observation. You can include basic html.}
     \item{\code{leftmar}}{space on the left margin}
     \item{\code{topmar}}{space on the bottom margin}
+    \item{\code{diag}}{logical, whether or not the main diagonal is plotted
+(scatter plot of variables against themselves).}
   }}
 }
 \value{

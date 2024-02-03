@@ -35,6 +35,9 @@ Getters return globally accessible data, whereas setters return
 \description{
 Get or set groups
 }
+\note{
+Needs to be called inside a reactive function
+}
 \seealso{
 Other functions to get and set global variables: 
 \code{\link{getClinicalMatchFrom}()},
