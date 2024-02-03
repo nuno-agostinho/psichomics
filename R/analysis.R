@@ -436,12 +436,12 @@ processSurvTerms <- function(clinical, censoring, event, timeStart,
 #' survTerms  <- processSurvTerms(clinical, censoring="right", event, timeStart,
 #'                                formulaStr=formulaStr)
 #' survfit(survTerms)
-survfit.survTerms <- function(survTerms, ...) {
-    res <- survfit(survTerms$form, data=survTerms$survTime, ...)
-    res$scale <- survTerms$scale
+survfit.survTerms <- function(formula, ...) {
+    res <- survfit(formula$form, data=formula$survTime, ...)
+    res$scale <- formula$scale
 
     # Correct group names
-    groups <- deparse(survTerms$form[[3]])
+    groups <- deparse(formula$form[[3]])
     if (!is.null(res$strata) && groups == "groups") {
         name <- paste0("^", groups, "=")
         names(res$strata) <- gsub(name, "", names(res$strata))
