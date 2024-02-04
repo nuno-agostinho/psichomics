@@ -1,3 +1,15 @@
+# psichomics 1.28.1 (4 Feb, 2024)
+
+* Update GTEx data download based on new URL endpoints
+* Documentation:
+    - Update function documentation based on bug fixes below
+    - Update license copyright years
+* Bug fixes:
+    - Fix deprecated used of `size` in `ggplot2::geom_line`
+    - Fix inconsistent argument in `survfit.survTerms()`
+    - Fix unit test issues when testing low coverage using random PSI values
+    - Update pkgdown and R CMD check automation in GitHub Actions
+
 # psichomics 1.24.0 (26 Oct, 2022)
 
 * Bug fix: psichomics app now opens as expected instead of crashing
