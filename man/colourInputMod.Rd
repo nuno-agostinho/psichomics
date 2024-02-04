@@ -31,6 +31,7 @@ chosen, the return value is an 8-digit HEX code.}
 of a HEX value when possible.}
     \item{\code{closeOnClick}}{If \code{TRUE}, then the colour selection panel will close
 immediately after selecting a colour.}
+    \item{\code{width}}{The width of the input, e.g. \code{"400px"} or \code{"100\%"}}
   }}
 }
 \value{

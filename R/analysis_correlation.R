@@ -463,7 +463,7 @@ plot.GEandAScorrelation <- function(
             if (!is(loess, "error"))
                 plot <- plot + geom_line(
                     aes(x=loess$x, y=loess$y),
-                    colour=loessColour, alpha=loessAlpha, size=loessWidth)
+                    colour=loessColour, alpha=loessAlpha, linewidth=loessWidth)
         }
 
         if (density) {

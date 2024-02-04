@@ -47,7 +47,7 @@ performPCA(USArrests)
 \seealso{
 Other functions to analyse principal components: 
 \code{\link{calculateLoadingsContribution}()},
-\code{\link{plotPCAvariance}()},
-\code{\link{plotPCA}()}
+\code{\link{plotPCA}()},
+\code{\link{plotPCAvariance}()}
 }
 \concept{functions to analyse principal components}

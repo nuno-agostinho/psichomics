@@ -182,47 +182,43 @@ downloadGtexFiles <- function(link, folder) {
 #' @keywords internal
 getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
                            offline=FALSE) {
-    path <- paste0("gtex_analysis_v", release)
-    resp <- try(GET(domain, path=path, timeout(3)))
+    path <- "adult-gtex"
     date <- NULL
-    if (!is(resp, "try-error") && !http_error(resp) && !offline) {
-        doc <- xmlParse(resp)
-        df  <- xmlToDataFrame(doc, nodes=xmlRoot(doc)[-c(seq(4))],
-                              stringsAsFactors=FALSE)
-        files  <- c("annotations/.*Annotations_SampleAttributesDS\\.txt",
-                    "annotations/.*Annotations_SubjectPhenotypes.*DS\\.txt",
-                    "rna_seq_data/GTEx.*_gene_reads\\.gct\\.gz",
-                    "rna_seq_data/GTEx.*junction.*\\.gz")
-        index <- unlist(sapply(files, grep, df[[1]]))
-        if (length(Filter(length, index)) == 0) return(NULL)
-        res   <- df[index, "Key"]
-        date  <- max(as.Date(df[index, "LastModified"]))
-    } else if (release == 8) {
+    if (release == 8) {
         res <- c(
-            "annotations/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt",
-            "annotations/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt",
-            paste0("rna_seq_data/GTEx_Analysis_2017-06-05_v8_",
-                   c("RNASeQCv1.1.9_gene_reads.gct.gz",
-                     "STARv2.5.3a_junctions.gct.gz")))
+            "annotations/v8/metadata-files/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt",
+            "annotations/v8/metadata-files/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt",
+            "bulk-gex/v8/rna-seq/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz",
+            "bulk-gex/v8/rna-seq/GTEx_Analysis_2017-06-05_v8_STARv2.5.3a_junctions.gct.gz")
+        date <- as.Date("2019-08-26")
     } else if (release == 7) {
-        res <- c("annotations/GTEx_v7_Annotations_SampleAttributesDS.txt",
-                 "annotations/GTEx_v7_Annotations_SubjectPhenotypesDS.txt",
-                 paste0("rna_seq_data/GTEx_Analysis_2016-01-15_v7_",
-                        c("RNASeQCv1.1.8_gene_reads.gct.gz",
-                          "STARv2.4.2a_junctions.gct.gz")))
+        res <- c(
+            "annotations/v7/metadata-files/GTEx_v7_Annotations_SampleAttributesDS.txt",
+            "annotations/v7/metadata-files/GTEx_v7_Annotations_SubjectPhenotypesDS.txt",
+            "bulk-gex/v7/rna-seq/GTEx_Analysis_2016-01-15_v7_RNASeQCv1.1.8_gene_reads.gct.gz",
+            "bulk-gex/v7/rna-seq/GTEx_Analysis_2016-01-15_v7_STARv2.4.2a_junctions.gct.gz")
+        date <- as.Date("2017-09-05")
     } else if (release == 6) {
-        res <- c("annotations/GTEx_Data_V6_Annotations_SampleAttributesDS.txt",
-                 "annotations/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt",
-                 paste0("rna_seq_data/GTEx_Analysis_v6_RNA-seq_",
-                        c("RNA-SeQCv1.1.8_gene_reads.gct.gz",
-                          "Flux1.6_junction_reads.txt.gz")))
+        res <- c(
+            "annotations/v6/metadata-files/GTEx_Data_V6_Annotations_SampleAttributesDS.txt",
+            "annotations/v6/metadata-files/GTEx_Data_V6_Annotations_SubjectPhenotypesDS.txt",
+            "bulk-gex/v6/rna-seq/GTEx_Analysis_v6_RNA-seq_RNA-SeQCv1.1.8_gene_reads.gct.gz",
+            "bulk-gex/v6/rna-seq/GTEx_Analysis_v6_RNA-seq_Flux1.6_junction_reads.txt.gz")
+        date <- as.Date("2017-04-25")
     } else if (release == 4) {
         res <- c(
-            "annotations/GTEx_Data_V4_Annotations_SampleAttributesDS.txt",
-            "annotations/GTEx_Data_V4_Annotations_SubjectPhenotypes_DS.txt",
-            paste0("rna_seq_data/GTEx_Analysis_V4_RNA-seq_",
-                   c("RNA-SeQCv1.1.8_gene_reads.gct.gz",
-                     "Flux1.6_junction_reads.txt.gz")))
+            "annotations/v4/metadata-files/GTEx_Data_V4_Annotations_SampleAttributesDS.txt",
+            "annotations/v4/metadata-files/GTEx_Data_V4_Annotations_SubjectPhenotypes_DS.txt",
+            "bulk-gex/v4/rna-seq/GTEx_Analysis_V4_RNA-seq_RNA-SeQCv1.1.8_gene_reads.gct.gz",
+            "bulk-gex/v4/rna-seq/GTEx_Analysis_V4_RNA-seq_Flux1.6_junction_reads.txt.gz")
+        date <- as.Date("2017-04-24")
+    } else if (release == 3) {
+        res <- c(
+            "annotations/v3/metadata-files/GTEx_Analysis_Annotations_Sample_DS__Pilot_V3.txt",
+            "annotations/v3/metadata-files/GTEx_Analysis_Annotations_Subject_DS__Pilot_V3.txt",
+            "bulk-gex/v3/rna-seq/GTEx_Analysis_RNA-seq_RNA-SeQCv1.1.8_gene_reads__Pilot_V3_patch1.gct.gz",
+            "bulk-gex/v3/rna-seq/GTEx_Analysis_RNA-seq_Flux1.2.3_junction_readcount__Pilot_V3.txt.gz")
+        date <- as.Date("2017-04-24")
     } else {
         res <- NULL
     }
@@ -230,7 +226,6 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
         res               <- file.path(domain, path, res)
         names(res)        <- getGtexDataTypes()
         attr(res, "date") <- date
-
     }
     return(res)
 }

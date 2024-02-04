@@ -55,18 +55,7 @@ for each group)?}
     \item{\code{adjust}}{the bandwidth used is actually \code{adjust*bw}.
     This makes it easy to specify values like \sQuote{half the default}
     bandwidth.}
-    \item{\code{kernel}}{a character string giving the smoothing kernel
-    to be used. This must partially match one of \code{"gaussian"},
-    \code{"rectangular"}, \code{"triangular"}, \code{"epanechnikov"},
-    \code{"biweight"}, \code{"cosine"} or \code{"optcosine"}, with default
-    \code{"gaussian"}, and may be abbreviated to a unique prefix (single
-    letter).
-
-    \code{"cosine"} is smoother than \code{"optcosine"}, which is the
-    usual \sQuote{cosine} kernel in the literature and almost MSE-efficient.
-    However, \code{"cosine"} is the version used by S.
-  }
-    \item{\code{window}}{a character string giving the smoothing kernel
+    \item{\code{kernel,window}}{a character string giving the smoothing kernel
     to be used. This must partially match one of \code{"gaussian"},
     \code{"rectangular"}, \code{"triangular"}, \code{"epanechnikov"},
     \code{"biweight"}, \code{"cosine"} or \code{"optcosine"}, with default
@@ -80,7 +69,17 @@ for each group)?}
     \item{\code{weights}}{numeric vector of non-negative observation weights,
     hence of same length as \code{x}. The default \code{NULL} is
     equivalent to \code{weights = rep(1/nx, nx)} where \code{nx} is the
-    length of (the finite entries of) \code{x[]}.}
+    length of (the finite entries of) \code{x[]}.  If \code{na.rm = TRUE}
+    and there are \code{NA}'s in \code{x}, they \emph{and} the
+    corresponding weights are removed before computations.  In that case,
+    when the original weights have summed to one, they are re-scaled to
+    keep doing so.
+
+    Note that weights are \emph{not} taken into account for automatic
+    bandwidth rules, i.e., when \code{bw} is a string.  When the weights
+    are proportional to true counts \code{cn}, \code{density(x = rep(x, cn))}
+    may be used instead of \code{weights}.
+  }
     \item{\code{width}}{this exists for compatibility with S; if given, and
     \code{bw} is not, will set \code{bw} to \code{width} if this is a
     character string, or to a kernel-dependent multiple of \code{width}
@@ -88,16 +87,23 @@ for each group)?}
     \item{\code{give.Rkern}}{logical; if true, \emph{no} density is estimated, and
     the \sQuote{canonical bandwidth} of the chosen \code{kernel} is returned
     instead.}
+    \item{\code{subdensity}}{used only when \code{weights} are specified which do not sum
+    to one.  When true, it indicates that a \dQuote{sub-density}
+    is desired and no warning should be signalled.  By default, when false,
+    a \code{\link{warning}} is signalled when the weights do not sum to one.}
+    \item{\code{warnWbw}}{\code{\link{logical}}, used only when \code{weights} are specified \emph{and}
+    \code{bw} is \code{character}, i.e., automatic bandwidth selection is
+    chosen (as by default).  When true (as by default), a
+    \code{\link{warning}} is signalled to alert the user that automatic
+    bandwidth selection will not take the weights into account and hence
+    may be suboptimal.}
     \item{\code{n}}{the number of equally spaced points at which the density is
     to be estimated.  When \code{n > 512}, it is rounded up to a power
     of 2 during the calculations (as \code{\link[stats]{fft}} is used) and the
     final result is interpolated by \code{\link[stats]{approx}}.  So it almost
     always makes sense to specify \code{n} as a power of two.
   }
-    \item{\code{from}}{the left and right-most points of the grid at which the
-    density is to be estimated; the defaults are \code{cut * bw} outside
-    of \code{range(x)}.}
-    \item{\code{to}}{the left and right-most points of the grid at which the
+    \item{\code{from,to}}{the left and right-most points of the grid at which the
     density is to be estimated; the defaults are \code{cut * bw} outside
     of \code{range(x)}.}
     \item{\code{cut}}{by default, the values of \code{from} and \code{to} are

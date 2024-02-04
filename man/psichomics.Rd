@@ -42,7 +42,7 @@ only used for recording or running automated tests. Defaults to the
 
 \item{launch.browser}{If true, the system's default web browser will be
 launched automatically after the app is started. Defaults to true in
-interactive sessions only. This value of this parameter can also be a
+interactive sessions only. The value of this parameter can also be a
 function to call with the application's URL.}
 
 \item{shinyproxy}{Boolean: prepare visual interface to run in Shinyproxy?}

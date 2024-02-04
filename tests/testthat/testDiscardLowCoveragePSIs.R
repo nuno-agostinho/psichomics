@@ -1,6 +1,7 @@
 context("Discard low coverage PSI values")
 
 createPSIdataset <- function(samples=20, events=50) {
+    set.seed(639245)
     size <- samples * events
     num  <- sample(seq(100), size, replace=TRUE)
     num[sample(size, size / 10)] <- NA

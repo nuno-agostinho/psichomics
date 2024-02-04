@@ -23,6 +23,9 @@ Getters return globally accessible data, whereas setters return
 \description{
 Get or set clinical matches from a given data type
 }
+\note{
+Needs to be called inside a reactive function
+}
 \seealso{
 Other functions to get and set global variables: 
 \code{\link{getDifferentialExpression}()},

@@ -20,6 +20,7 @@ processSurvival(session, ...)
     \item{\code{coxph}}{Boolean: fit a Cox proportional hazards regression model?}
     \item{\code{survTime}}{\code{survTime} object: times to follow up, time start, time
 stop and event (optional)}
+    \item{\code{group}}{Character: group relative to each subject}
     \item{\code{clinical}}{Data frame: clinical data}
     \item{\code{event}}{Character: name of column containing time of the event of
 interest}
@@ -27,7 +28,6 @@ interest}
 interval or follow up time}
     \item{\code{timeStop}}{Character: name of column containing ending time of the
 interval (only relevant for interval censoring)}
-    \item{\code{group}}{Character: group relative to each subject}
     \item{\code{followup}}{Character: name of column containing follow up time}
   }}
 }
