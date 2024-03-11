@@ -177,6 +177,8 @@ highlighted (unless <code>data2 = NULL</code>)</p></dd>
 <span class="r-in"><span><span class="fu">plotRowStats</span><span class="op">(</span><span class="va">geneExpr</span>, <span class="st">"mean"</span>, <span class="st">"var^(1/4)"</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Mean-variance plot"</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y<span class="op">=</span><span class="st">"Square Root of the Standard Deviation"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-plt img"><img src="plotRowStats-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plotting alternative splicing quantification</span></span></span>
@@ -191,11 +193,15 @@ highlighted (unless <code>data2 = NULL</code>)</p></dd>
 <span class="r-in"><span><span class="va">medianVar</span> <span class="op">&lt;-</span> <span class="fu">plotRowStats</span><span class="op">(</span><span class="va">psi</span>, x<span class="op">=</span><span class="st">"median"</span>, y<span class="op">=</span><span class="st">"var"</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Median PSI"</span>, y<span class="op">=</span><span class="st">"PSI variance"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">medianVar</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-plt img"><img src="plotRowStats-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rangeVar</span>  <span class="op">&lt;-</span> <span class="fu">plotRowStats</span><span class="op">(</span><span class="va">psi</span>, x<span class="op">=</span><span class="st">"range"</span>, y<span class="op">=</span><span class="st">"log10(var)"</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"PSI range"</span>, y<span class="op">=</span><span class="st">"log10(PSI variance)"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">rangeVar</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-plt img"><img src="plotRowStats-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
