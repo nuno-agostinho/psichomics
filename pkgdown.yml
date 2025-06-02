@@ -1,12 +1,12 @@
 pandoc: 3.1.11
-pkgdown: 2.1.2
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   AS_events_preparation: AS_events_preparation.html
   CLI_tutorial: CLI_tutorial.html
   custom_data: custom_data.html
   GUI_tutorial: GUI_tutorial.html
-last_built: 2025-05-19T07:29Z
+last_built: 2025-06-02T07:27Z
 urls:
   reference: https://nuno-agostinho.github.io/psichomics/reference
   article: https://nuno-agostinho.github.io/psichomics/articles
