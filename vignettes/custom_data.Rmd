@@ -375,7 +375,7 @@ sampleInfo    <- data[[1]]$`Sample metadata`
 All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any comments and questions to:
 
-> Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
+> Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
 >
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][distrans]
 
