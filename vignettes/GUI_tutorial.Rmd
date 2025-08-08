@@ -621,7 +621,7 @@ Sample-associated files from SRA are also supported.
 All feedback on the program, documentation and associated material (including
 this tutorial) is welcome. Please send any suggestions and comments to:
 
-> Nuno Saraiva-Agostinho (nunoagostinho@medicina.ulisboa.pt)
+> Nuno Saraiva-Agostinho (nunodanielagostinho@gmail.com)
 >
 > [Disease Transcriptomics Lab, Instituto de Medicina Molecular (Portugal)][iMM]
 
