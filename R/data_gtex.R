@@ -19,7 +19,7 @@ getGtexDataTypes <- function() {
 #' @examples
 #' getGtexReleases()
 getGtexReleases <- function() {
-    release <- c(8, 7, 6, 4)
+    release <- c(10, 8, 7, 6, 4)
     n <- max(release) + 1
     getReleaseIfNotNull <- function(n) if (!is.null(getGtexDataURL(n))) n
     release <- c(release, getReleaseIfNotNull(n), getReleaseIfNotNull(n + 1))
@@ -184,7 +184,15 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
                            offline=FALSE) {
     path <- "adult-gtex"
     date <- NULL
-    if (release == 8) {
+
+    if (release == 10) {
+        res <- c(
+            "annotations/v10/metadata-files/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt",
+            "annotations/v10/metadata-files/GTEx_Analysis_v10_Annotations_SubjectPhenotypesDS.txt",
+            "bulk-gex/v10/rna-seq/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_reads.gct.gz",
+            "bulk-gex/v10/rna-seq/GTEx_Analysis_v10_STARv2.7.10a_junctions.gct.gz")
+        date <- as.Date("")
+    } else if (release == 8) {
         res <- c(
             "annotations/v8/metadata-files/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt",
             "annotations/v8/metadata-files/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt",
