@@ -40,7 +40,7 @@ gtexDataUI <- function(id, panel) {
                    a(href="http://www.gtexportal.org", target="_blank",
                      "GTEx Data Portal")),
           selectizeInput(ns("release"), "Version release", width="100%",
-                         getGtexReleases(), selected=8),
+                         getGtexReleases(), selected=10),
           selectizeInput(ns("dataTypes"), "Data type", multiple=TRUE,
                          width="100%", getGtexDataTypes(),
                          selected=getGtexDataTypes(), options=list(
