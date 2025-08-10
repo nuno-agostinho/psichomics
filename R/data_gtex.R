@@ -281,7 +281,7 @@ loadGtexData <- function(folder=getDownloadsFolder(), data=getGtexDataTypes(),
     if (is.null(link)) stop("No data available for GTEx V", release)
 
     folder <- file.path(folder, paste0("GTEx_V", release))
-    if (!dir.exists(folder)) dir.create(folder)
+    if (!dir.exists(folder)) dir.create(folder, recursive=TRUE)
     filepath <- downloadGtexFiles(link, folder)
 
     if (progress) updateProgress("Loading files...", divisions=length(data))
