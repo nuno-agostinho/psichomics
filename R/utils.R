@@ -783,6 +783,26 @@ uniqueBy <- function(data, ...) {
     return(data[uniq, ])
 }
 
+#' On collapse observer
+#'
+#' Adds a JavaScript listener to a Bootstrap collapse panel so that
+#' when it is shown, a Shiny input value is updated with the provided label.
+#'
+#' @param id The ID of the collapse panel.
+#'
+#' @return A \code{tags$script} object containing the JavaScript listener.
+#' @keywords internal
+onCollapseOpen <- function(id) {
+    tags$script(HTML(sprintf("
+        $(document).ready(function() {
+            $('#%1$s').on('show.bs.collapse', function (e) {
+                let label = $(e.target).closest('.panel').attr('value');
+                Shiny.setInputValue('%1$s', label);
+                console.log('%1$s', label);
+            });
+        });", id)))
+}
+
 #' Add an exporting feature to a \code{highcharts} object
 #'
 #' @param hc A \code{highcharts} object

@@ -47,6 +47,7 @@ gtexDataUI <- function(id, panel) {
                              placeholder="Select data types",
                              plugins=list("remove_button"))),
           browseDownloadFolderInput(ns("folder")),
+          onCollapseOpen(ns("filterCollapse")),
           bsCollapse(
               id=ns("filterCollapse"),
               bsCollapsePanel(
