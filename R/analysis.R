@@ -2942,31 +2942,32 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
         }
     })
 
+    highlightUI <- function(label, min, max) {
+        browser()
+        highlightId <- ns(paste0(label, "Highlight"))
+        sliderMinId <- ns(paste0(label, "SliderMin"))
+        sliderMaxId <- ns(paste0(label, "SliderMax"))
+        sliderInvId <- ns(paste0(label, "SliderInv"))
+
+        # Round max and min numbers with two decimal points
+        max <- ceiling(max*100)/100
+        min <- floor(min*100)/100
+
+        conditionalPanel(
+            sprintf("input[id='%s']", highlightId),
+            fluidRow(
+                column(6, textInput(sliderMinId, "Lower limit \u2265",
+                                    placeholder=min, width="100%")),
+                column(6, textInput(sliderMaxId, "Upper limit \u2264",
+                                    placeholder=max, width="100%"))),
+            checkboxInput(sliderInvId, "Invert highlighted values"),
+            helpText("The data in the table is also filtered",
+                     "according to highlighted events."))
+    }
+
     # Interface elements to highlight values in the plot
-    lapply(c("x", "y"), function(axis) {
+    prepareHighlightValuesObserver <- function(axis) {
         observe({
-            highlightUI <- function(label, min, max) {
-                highlightId <- ns(paste0(label, "Highlight"))
-                sliderMinId <- ns(paste0(label, "SliderMin"))
-                sliderMaxId <- ns(paste0(label, "SliderMax"))
-                sliderInvId <- ns(paste0(label, "SliderInv"))
-
-                # Round max and min numbers with two decimal points
-                max <- ceiling(max*100)/100
-                min <- floor(min*100)/100
-
-                conditionalPanel(
-                    sprintf("input[id='%s']", highlightId),
-                    fluidRow(
-                        column(6, textInput(sliderMinId, "Lower limit \u2265",
-                                            placeholder=min, width="100%")),
-                        column(6, textInput(sliderMaxId, "Upper limit \u2264",
-                                            placeholder=max, width="100%"))),
-                    checkboxInput(sliderInvId, "Invert highlighted values"),
-                    helpText("The data in the table is also filtered",
-                             "according to highlighted events."))
-            }
-
             stats <- getAnalysesData()
             optimSurv <- getAnalysesSurvival()
             if (!is.null(optimSurv)) {
@@ -2996,7 +2997,9 @@ analysesPlotSet <- function(session, input, output, analysesType, analysesID,
             output[[paste0(axis, "HighlightValues")]] <- renderUI(
                 highlightUI(axis, minNo, maxNo) )
         })
-    })
+    }
+    prepareHighlightValuesObserver("x")
+    prepareHighlightValuesObserver("y")
 
     # Disable labelling elements as appropriate
     observe(toggleState("labelTopOptions", input$labelTopEnable))
