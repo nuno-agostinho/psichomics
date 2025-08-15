@@ -84,9 +84,9 @@ The Docker images are based on [Bioconductor Docker][biocDocker] and contain psi
 docker pull ghcr.io/nuno-agostinho/psichomics:latest
 ```
 
-2. Start RStudio Web from the Docker image:
+2. Start RStudio Web from the Docker image (mount your own Downloads folder):
 ```
-docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/psichomics:latest
+docker run -e PASSWORD=bioc -p 8787:8787 -v ~/Downloads:/home/rstudio/Downloads ghcr.io/nuno-agostinho/psichomics:latest
 ```
 
 3. Go to RStudio Web via the web browser at https://localhost:8787
