@@ -91,9 +91,15 @@ listSplicingAnnotations <- function(species=NULL, assembly=NULL, date=NULL,
 #' annot <- loadAnnotation(human)
 #' }
 loadAnnotation <- function(annotation, cache=getAnnotationHubOption("CACHE")) {
-    ah    <- loadAnnotationHub(cache)
+    ah <- loadAnnotationHub(cache)
+    if (length(ah) == 0) {
+		return(NULL)
+	}
+
     annot <- ah[[annotation]]
-    attr(annot, "metadata") <- unlist(mcols(ah[annotation]))
+    if (!is.null(annot)) {
+        attr(annot, "metadata") <- unlist(mcols(ah[annotation]))
+    }
     return(annot)
 }
 
