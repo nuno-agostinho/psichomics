@@ -1,0 +1,128 @@
+# Plot diagram of alternative splicing events
+
+Plot diagram of alternative splicing events
+
+## Usage
+
+``` r
+plotSplicingEvent(
+  ASevent,
+  data = NULL,
+  showText = TRUE,
+  showPath = TRUE,
+  showAlternative1 = TRUE,
+  showAlternative2 = TRUE,
+  constitutiveWidth = NULL,
+  alternativeWidth = NULL,
+  intronWidth = NULL,
+  constitutiveFill = "lightgray",
+  constitutiveStroke = "darkgray",
+  alternative1Fill = "#ffb153",
+  alternative1Stroke = "#faa000",
+  alternative2Fill = "#caa06c",
+  alternative2Stroke = "#9d7039",
+  class = NULL,
+  style = NULL
+)
+```
+
+## Arguments
+
+- ASevent:
+
+  Character: alternative splicing event identifiers
+
+- data:
+
+  Matrix or data frame: alternative splicing information
+
+- showText:
+
+  Boolean: display coordinates and length (if available)
+
+- showPath:
+
+  Boolean: display alternative splicing junctions
+
+- showAlternative1:
+
+  Boolean: show alternative exon 1 and respective splicing junctions and
+  text?
+
+- showAlternative2:
+
+  Boolean: show alternative exon 2 and respective splicing junctions and
+  text? (only related with mutually exclusive exons)
+
+- constitutiveWidth:
+
+  Numeric: width of constitutive exon(s)
+
+- alternativeWidth:
+
+  Numeric: width of alternative exon(s)
+
+- intronWidth:
+
+  Numeric: width of intron's representation
+
+- constitutiveFill:
+
+  Character: fill colour of constitutive exons
+
+- constitutiveStroke:
+
+  Character: stroke colour of constitutive exons
+
+- alternative1Fill:
+
+  Character: fill colour of alternative exon 1
+
+- alternative1Stroke:
+
+  Character: stroke colour of alternative exon 1
+
+- alternative2Fill:
+
+  Character: fill colour of alternative exon 2
+
+- alternative2Stroke:
+
+  Character: stroke colour of alternative exon 2
+
+- class:
+
+  Character: class of SVG parent tag
+
+- style:
+
+  Character: style of SVG parent tag
+
+## Value
+
+List of SVG (one for each alternative splicing event)
+
+## Examples
+
+``` r
+events <- c(
+  "A3SS_15_+_63353138_63353912_63353397_TPM1",
+  "A3SS_11_-_61118463_61117115_61117894_CYB561A3",
+  "A5SS_21_+_48055675_48056459_48056808_PRMT2",
+  "A5SS_1_-_1274742_1274667_1274033_DVL1",
+  "AFE_9_+_131902430_131901928_131904724_PPP2R4",
+  "AFE_5_-_134686513_134688636_134681747_H2AFY",
+  "ALE_12_+_56554104_56554410_56555171_MYL6",
+  "ALE_8_-_38314874_38287466_38285953_FGFR1",
+  "SE_9_+_6486925_6492303_6492401_6493826_UHRF2",
+  "SE_19_-_5218431_5216778_5216731_5215606_PTPRS",
+  "MXE_15_+_63335142_63335905_63336030_63336226_63336351_63349184_TPM1",
+  "MXE_17_-_74090495_74087316_74087224_74086478_74086410_74085401_EXOC7")
+diagram <- plotSplicingEvent(events)
+
+if (FALSE) { # \dontrun{
+diagram[["A3SS_3_-_145796903_145794682_145795711_PLOD2"]]
+diagram[[6]]
+diagram
+} # }
+```

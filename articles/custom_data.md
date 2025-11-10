@@ -1,0 +1,414 @@
+# Loading user-provided data
+
+*psichomics* is an interactive R package for integrative analyses of
+alternative splicing and gene expression based on data from multiple
+sources, including user-provided data.
+
+## Supported file formats
+
+psichomics supports the following data sources. Each source has a link
+with instructions for data loading.
+
+| Source                                                                                                                          | Sample information | Subject information | Gene expression | Exon-exon junction quantification | Alternative splicing quantification |
+|:--------------------------------------------------------------------------------------------------------------------------------|:------------------:|:-------------------:|:---------------:|:---------------------------------:|:-----------------------------------:|
+| [SRA Run Selector](#prepare-sra-run-selector-data)                                                                              |        Yes         |                     |                 |                                   |                                     |
+| [STAR](#prepare-tables-based-on-rna-seq-data-using-star)                                                                        |                    |                     |       Yes       |                Yes                |                                     |
+| [VAST-TOOLS](#prepare-vast-tools-data)                                                                                          |                    |                     |       Yes       |                                   |                 Yes                 |
+| [TCGA (via FireBrowse)](#prepare-firebrowse-data)                                                                               |        Yes         |         Yes         |       Yes       |                Yes                |                                     |
+| [SRA (via recount)](https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html#load-sra-project-data-using-recount) |        Yes         |         Yes         |       Yes       |                Yes                |                                     |
+| [GTEx](#prepare-gtex-data)                                                                                                      |        Yes         |         Yes         |       Yes       |                Yes                |                                     |
+| [Other sources](#prepare-data-from-any-source)                                                                                  |        Yes         |         Yes         |       Yes       |                Yes                |              Limited\*              |
+
+\* psichomics cannot fully parse alternative splicing events (e.g. it
+may not identify the cognate gene and coordinates) based on tables from
+these sources.
+
+### Prepare [SRA Run Selector](https://www.ncbi.nlm.nih.gov/Traces/study/) data
+
+The [SRA Run Selector](https://www.ncbi.nlm.nih.gov/Traces/study/)
+contains sample metadata that can be downloaded for all or selected
+samples from a SRA project. To download sample information, click the
+**Metadata** button in the **Download** columns. The output file is
+usually named `SraRunTable.txt`.
+
+To proceed loading the data, move the downloaded file to a new folder
+and follow the instructions in [Load user-provided data into
+psichomics](#load-user-provided-data-into-psichomics).
+
+### Prepare tables based on RNA-seq data using STAR
+
+The following section goes through the steps required to load data based
+on RNA-seq data:
+
+1.  Retrieve FASTQ files and sample-associated information (optional if
+    you already have the FASTQ files);
+2.  Map RNA-seq reads from the FASTQ files against a genome of reference
+    using a splice-aware aligner, such as
+    [STAR](https://github.com/alexdobin/STAR);
+3.  Merge and prepare its output to be correctly interpreted by
+    psichomics;
+4.  Load data into psichomics.
+
+#### Download FASTQ files (optional)
+
+[SRA](https://www.ncbi.nlm.nih.gov/sra) is a repository of biological
+sequences that stores data from many published articles with the
+potential to answer pressing biological questions.
+
+> The latest versions of psichomics support **automatic downloading of
+> SRA data** from
+> [recount](https://jhubiostatistics.shinyapps.io/recount/), a resource
+> of pre-processed data for thousands of SRA projects (including gene
+> read counts, splice junction quantification and sample metadata).
+> First, check if the project of your interest is available in recount,
+> thus making it quicker to analyse gene expression and alternative
+> splicing for your samples of interest.
+
+Data from SRA can be downloaded using the
+[fasterq-dump](https://github.com/ncbi/sra-tools/wiki/HowTo:-fasterq-dump)
+command from [sra-tools](https://github.com/ncbi/sra-tools). For
+instance, to retrieve samples from the
+[SRP126561](https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561)
+project:
+
+``` bash
+# List SRA samples
+samples=(SRR6368612 SRR6368613 SRR6368614 SRR6368615 SRR6368616 SRR6368617)
+
+# Download samples
+fasterq-dump --split-3 ${samples}
+```
+
+> **`--split-3`** allows to output one or two FASTQ files for single-end
+> or paired-end sequencing, respectively (a third FASTQ file may also be
+> returned containing orphaned single-end reads obtained from paired-end
+> sequencing data)
+
+Sample-associated data is also available from the [Run
+Selector](https://trace.ncbi.nlm.nih.gov/Traces/study/?acc=SRP126561)
+page. Click **RunInfo Table** to download the whole metadata table for
+all samples (usually downloaded in a file named `SraRunTable.txt`).
+
+#### Align RNA-seq data to quantify splice junctions
+
+The quantification of each alternative splicing event is based on the
+proportion of junction reads that support the inclusion isoform, known
+as percent spliced-in or PSI (Wang *et al.*, 2008).
+
+To estimate this value for each splicing event, both alternative
+splicing annotation and quantification of RNA-Seq reads aligning to
+splice junctions (junction quantification) are required. While
+alternative splicing annotation is provided by the package, junction
+quantification will need to be prepared from user-provided data by
+aligning the RNA-seq reads from FASTQ files to a genome of reference. As
+junction reads are required to quantify alternative splicing, a
+splice-aware aligner will be used.
+
+psichomics currently supports [STAR](https://github.com/alexdobin/STAR)
+output.
+
+##### Index the genome using STAR
+
+Before aligning FASTQ samples against a genome of reference, an index
+needs to be prepared.
+
+Start by downloading a FASTA file of the whole genome and a GTF file
+with annotated transcripts. This command makes use of these [human FASTA
+and GTF files (hg19
+assembly)](https://grch37.ensembl.org/info/data/ftp/).
+
+``` bash
+mkdir hg19_STAR
+STAR --runMode genomeGenerate \
+     --genomeDir hg19_STAR \
+     --genomeFastaFiles /path/to/hg19.fa \
+     --sjdbGTFfile /path/to/hg19.gtf \
+     --runThreadN 4
+
+# Arguments:
+#     --runMode             Generate the genome index
+#     --genomeDir           Path to genome index (output)
+#     --genomeFastaFiles    Path to genome FASTA file(s)
+#     --sjdbGTFfile         Path to junction GTF annotation
+#     --runThreadN 4        Run in parallel using 4 threads
+```
+
+##### Align against genome index using STAR
+
+After the genome index is generated, the sequences in the FASTQ files
+need to be aligned against the annotated gene and splice junctions from
+the previously prepared reference. The following commands make STAR
+output both gene and junction read counts into files ending in
+`ReadsPerGene.out.tab` and `SJ.out.tab`, respectively.
+
+``` bash
+align () {
+    echo "Aligning ${1} using STAR..."
+    STAR --readFilesIn ${1}_1.fastq ${1}_2.fastq \
+         --runThreadN 16 \
+         --genomeDir hg19_STAR \
+         --readFilesCommand zcat \
+         --quantMode GeneCounts \
+         --outFileNamePrefix ${1}
+}
+# Arguments:
+#     --readFilesIn              FASTQ files to align
+#     --runThreadN 16            Run in parallel using 16 threads
+#     --genomeDir                Path to genome index (input)
+#     --readFilesCommand zcat    Use zcat to extract compressed files
+#     --quantMode                Return gene read counts
+#     --outFileNamePrefix        Prefix for output files
+         
+for each in ${samples}; do
+    align "${each}"
+done
+```
+
+#### Prepare output for psichomics
+
+To process the resulting data files, type in R:
+
+``` r
+# Change working directory to where the STAR output is
+setwd("/path/to/aligned/output/")
+
+library(psichomics)
+prepareGeneQuant(
+    "SRR6368612ReadsPerGene.out.tab", "SRR6368613ReadsPerGene.out.tab",
+    "SRR6368614ReadsPerGene.out.tab", "SRR6368615ReadsPerGene.out.tab",
+    "SRR6368616ReadsPerGene.out.tab", "SRR6368617ReadsPerGene.out.tab")
+prepareJunctionQuant("SRR6368612SJ.out.tab", "SRR6368613SJ.out.tab", 
+                     "SRR6368614SJ.out.tab", "SRR6368615SJ.out.tab",
+                     "SRR6368616SJ.out.tab", "SRR6368617SJ.out.tab")
+```
+
+To load the data, move the files (including the SRA metadata) to a new
+folder and follow the instructions in [Load user-provided data into
+psichomics](#load-user-provided-data-into-psichomics).
+
+### Prepare [VAST-TOOLS](https://github.com/vastgroup/vast-tools) data
+
+psichomics supports loading inclusion levels and gene expression tables
+from [VAST-TOOLS](https://github.com/vastgroup/vast-tools) (the tables
+available after running `vast-tools combine`). Note:
+
+- If you are interested in analysing gene expression, please run
+  `vast-tools align` with argument `--expr`;
+- Gene expression is returned in cRPKMs; to get both cRPKMs and gene
+  read counts, please run `vast-tools combine` with argument `-C` (in
+  case of doubt, always calculate both cRPKMs and gene read counts).
+
+Any sample and/or subject information may also be useful to load. Unless
+the sample metadata comes from [SRA Run
+Selector](https://www.ncbi.nlm.nih.gov/Traces/study/), please ensure
+that the table is recognised by psichomics: read [Prepare generic
+data](#prepare-data-from-any-source).
+
+To load the data and move all files to a new folder (VAST-TOOLS
+alternative splicing quantification and gene expression tables and
+sample/subject-associated information).
+
+Follow the instructions in [Load user-provided data into
+psichomics](#load-user-provided-data-into-psichomics) to load the files
+in the visual interface. Otherwise, use function
+[`loadLocalFiles()`](https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles)
+with the folder path as an argument:
+
+``` r
+library(psichomics)
+data <- loadLocalFiles("/path/to/psichomics/input")
+names(data)
+names(data[[1]])
+
+junctionQuant  <- data[[1]]$`Junction quantification`
+sampleInfo     <- data[[1]]$`Sample metadata`
+# Both gene read counts and cRPKMs are loaded as separate data frames
+geneReadCounts <- data[[1]]$`Gene expression (read counts)`
+cRPKM          <- data[[1]]$`Gene expression (cRPKM)`
+```
+
+### Prepare [FireBrowse](http://firebrowse.org) data
+
+[FireBrowse](http://firebrowse.org) contains
+[TCGA](https://tcga-data.nci.nih.gov/docs/publications/tcga) data for
+multiple tumour types and can be [automatically downloaded and then
+loaded](https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html#downloading-and-loading-tcga-data)
+using psichomics.
+
+Alternatively, manually downloaded files from
+[FireBrowse](http://firebrowse.org) can be moved to a folder and then
+loaded in psichomics by following the instructions in [Load
+user-provided data into
+psichomics](#load-user-provided-data-into-psichomics).
+
+### Prepare [GTEx](https://www.gtexportal.org) data
+
+[GTEx](https://www.gtexportal.org) contains data for multiple normal
+tissues. GTEx data can be [automatically downloaded and then
+loaded](https://nuno-agostinho.github.io/psichomics/articles/CLI_tutorial.html#load-gtex-data)
+using psichomics.
+
+Alternatively, manually downloaded files from
+[GTEx](https://www.gtexportal.org) can be moved to a folder and then
+loaded in psichomics by following the instructions in [Load
+user-provided data into
+psichomics](#load-user-provided-data-into-psichomics).
+
+### Prepare data from any source
+
+psichomics supports importing generic data from any source as long as
+the tables are prepared as detailed below.
+
+> Please make sure that sample and subject identifiers are exactly the
+> same between **all datasets**.
+
+#### Sample information
+
+> If you are working with sample metadata from **SRA Run Selector**, see
+> [how to prepare SRA Run Selector
+> data](#prepare-sra-run-selector-data).
+
+- Tab-separated values (TSV)
+- **Sample identifiers (rows)** and their **attributes (columns)**
+- The first column must contain sample identifiers and be named
+  `Sample ID`
+- Optionally, indicate the subject associated to each sample in a column
+  named `Subject ID` (subject identifiers must be the same as the ones
+  used in subject information)
+- Example of a valid sample information dataset:
+
+| Sample ID | Type   | Tissue | Subject ID |
+|-----------|--------|--------|------------|
+| SMP-01    | Tumour | Lung   | SUBJ-03    |
+| SMP-02    | Normal | Blood  | SUBJ-12    |
+| SMP-03    | Normal | Blood  | SUBJ-25    |
+
+#### Subject information
+
+- Tab-separated values (TSV)
+- **Subject identifiers (rows)** and their **attributes (columns)**
+- The first column must contain subject identifiers and be named
+  `Subject ID`
+- Example of a valid subject information dataset:
+
+| Subject ID | Age | Gender | Race  |
+|------------|----:|--------|-------|
+| SUBJ-01    |  34 | Female | Black |
+| SUBJ-02    |  22 | Male   | Black |
+| SUBJ-03    |  58 | Female | Asian |
+
+#### Gene expression
+
+- Tab-separated values (TSV)
+- Read counts of **genes (rows)** across **sample (columns)** (sample
+  identifiers must be the same as the ones used in sample information)
+- The first column must contain unique gene names (symbols, Ensembl ID,
+  etc.) and be named `Gene ID`
+- Example of a valid gene expression dataset:
+
+| Gene ID | SMP-18 | SMP-03 | SMP-54 |
+|---------|-------:|-------:|-------:|
+| AMP1    |     24 |     10 |     43 |
+| BRCA1   |     38 |     46 |     32 |
+| BRCA2   |     43 |     65 |     21 |
+
+#### Exon-exon junction quantification
+
+- Tab-separated values (TSV)
+- Read counts of **exon-exon junctions (rows)** across **samples
+  (columns)** (sample identifiers must be the same as the ones used in
+  sample information)
+- The first column must contain junction identifiers and be named
+  `Junction ID`
+- Only chromosome number and capital letters X, Y, Z, W, and M are
+  supported, followed by the genomic regions; acceptable junction
+  identifiers include:
+  - `10_18748_21822`
+  - `chromosome 10 (18748 to 21822)`
+  - `chr10:18748-21822`
+- Optionally, indicate the strand with `+` or `-` at the end of the
+  junction identifier:
+  - `10:3213:9402:+`
+  - `chr10:3213-9402 -`
+- Junction identifiers whose chromosomes are `alt`, `random` or `Un`
+  (i.e. alternative sequences) are discarded
+- Example of a valid exon-exon junction quantification dataset:
+
+| Junction ID    | SMP-18 | SMP-03 |
+|----------------|-------:|-------:|
+| 10:6752-7393   |      4 |      0 |
+| 10:18748-21822 |      8 |     46 |
+| 10:24257-25325 |     83 |     65 |
+
+#### Alternative splicing quantification (also known as inclusion levels)
+
+> Note that psichomics cannot currently parse alternative splicing
+> events (e.g. identify the cognate gene and coordinates) from generic,
+> user-provided tables.
+
+- Tab-separated values (TSV)
+- Quantification values of **alternative splicing events (rows)** across
+  **samples (columns)** (sample identifiers must be the same as the ones
+  used in sample information)
+- The first column must be named `AS Event ID`
+- Values between 0 and 1 or between 0 and 100: if the latter, values are
+  automatically scaled between 0 and 1
+- Example of a valid alternative splicing quantification dataset:
+
+| AS Event ID       | SMP-18 | SMP-03 |
+|-------------------|-------:|-------:|
+| someASevent001    |   0.71 |   0.30 |
+| anotherASevent653 |   0.63 |   0.37 |
+| yetAnother097     |   0.38 |   0.62 |
+
+To load the data, move the files to a new folder and follow the
+instructions in [Load user-provided data into
+psichomics](#load-user-provided-data-into-psichomics).
+
+## Load user-provided data into psichomics
+
+### Load using the visual interface
+
+Start psichomics with the following commands in an R console or RStudio:
+
+``` r
+library(psichomics)
+psichomics()
+```
+
+Then, click **Load user files**. Click the **Folder input** tab and
+select the appropriate folder. Finally, click **Load files** to
+automatically scan and load all supported files from that folder.
+
+### Load using the command-line interface (CLI)
+
+Use function
+[`loadLocalFiles()`](https://nuno-agostinho.github.io/psichomics/reference/loadLocalFiles)
+with the folder path as an argument:
+
+``` r
+library(psichomics)
+data <- loadLocalFiles("/path/to/psichomics/input")
+names(data)
+names(data[[1]])
+
+geneExpr      <- data[[1]]$`Gene expression`
+junctionQuant <- data[[1]]$`Junction quantification`
+sampleInfo    <- data[[1]]$`Sample metadata`
+```
+
+## Feedback
+
+All feedback on the program, documentation and associated material
+(including this tutorial) is welcome. Please send any comments and
+questions to:
+
+> Nuno Saraiva-Agostinho (<nunodanielagostinho@gmail.com>)
+>
+> [Disease Transcriptomics Lab, Instituto de Medicina Molecular
+> (Portugal)](http://imm.medicina.ulisboa.pt/group/distrans/)
+
+## References
+
+Wang,E.T. *et al.* (2008) Alternative isoform regulation in human tissue
+transcriptomes. *Nature*, **456**, 470–476.
