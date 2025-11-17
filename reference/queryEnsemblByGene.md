@@ -47,214 +47,23 @@ Other functions to retrieve external information:
 
 ``` r
 queryEnsemblByGene("BRCA1", "human", "hg19")
-#> $source
-#> [1] "ensembl_havana"
+#> $description
+#> [1] "breast cancer 1, early onset [Source:HGNC Symbol;Acc:1100]"
 #> 
-#> $display_name
-#> [1] "BRCA1"
+#> $db_type
+#> [1] "core"
 #> 
-#> $start
-#> [1] 41196312
+#> $end
+#> [1] 41277500
 #> 
-#> $Transcript
-#>    gencode_primary              id assembly_name version
-#> 1                0 ENST00000357654        GRCh37       3
-#> 2                0 ENST00000468300        GRCh37       1
-#> 3                0 ENST00000586385        GRCh37       1
-#> 4                0 ENST00000591534        GRCh37       1
-#> 5                0 ENST00000591849        GRCh37       1
-#> 6                0 ENST00000493795        GRCh37       1
-#> 7                0 ENST00000471181        GRCh37       2
-#> 8                0 ENST00000461221        GRCh37       1
-#> 9                0 ENST00000491747        GRCh37       2
-#> 10               0 ENST00000484087        GRCh37       1
-#> 11               0 ENST00000478531        GRCh37       1
-#> 12               0 ENST00000493919        GRCh37       1
-#> 13               0 ENST00000472490        GRCh37       1
-#> 14               0 ENST00000487825        GRCh37       1
-#> 15               0 ENST00000461574        GRCh37       1
-#> 16               0 ENST00000467274        GRCh37       1
-#> 17               0 ENST00000412061        GRCh37       3
-#> 18               0 ENST00000470026        GRCh37       1
-#> 19               0 ENST00000477152        GRCh37       1
-#> 20               0 ENST00000492859        GRCh37       1
-#> 21               0 ENST00000497488        GRCh37       1
-#> 22               0 ENST00000494123        GRCh37       1
-#> 23               0 ENST00000473961        GRCh37       1
-#> 24               0 ENST00000476777        GRCh37       1
-#> 25               0 ENST00000461798        GRCh37       1
-#> 26               0 ENST00000489037        GRCh37       1
-#> 27               0 ENST00000354071        GRCh37       3
-#> 28               0 ENST00000352993        GRCh37       3
-#> 29               0 ENST00000346315        GRCh37       3
-#> 30               0 ENST00000351666        GRCh37       3
-#> 31               0 ENST00000309486        GRCh37       4
-#>                   logic_name                 biotype object_type length
-#> 1  ensembl_havana_transcript          protein_coding  Transcript   7094
-#> 2  ensembl_havana_transcript          protein_coding  Transcript   3273
-#> 3     havana_homo_sapiens_37          protein_coding  Transcript    781
-#> 4     havana_homo_sapiens_37          protein_coding  Transcript   1282
-#> 5     havana_homo_sapiens_37          protein_coding  Transcript    563
-#> 6  ensembl_havana_transcript          protein_coding  Transcript   5732
-#> 7  ensembl_havana_transcript          protein_coding  Transcript   5936
-#> 8     havana_homo_sapiens_37 nonsense_mediated_decay  Transcript   5693
-#> 9     havana_homo_sapiens_37          protein_coding  Transcript   2379
-#> 10    havana_homo_sapiens_37          protein_coding  Transcript   1495
-#> 11    havana_homo_sapiens_37          protein_coding  Transcript   1972
-#> 12    havana_homo_sapiens_37          protein_coding  Transcript   1948
-#> 13    havana_homo_sapiens_37         retained_intron  Transcript    561
-#> 14    havana_homo_sapiens_37          protein_coding  Transcript    800
-#> 15    havana_homo_sapiens_37          protein_coding  Transcript    726
-#> 16    havana_homo_sapiens_37         retained_intron  Transcript   4497
-#> 17    havana_homo_sapiens_37          non_stop_decay  Transcript   1312
-#> 18    havana_homo_sapiens_37          protein_coding  Transcript   2108
-#> 19    havana_homo_sapiens_37          protein_coding  Transcript   1980
-#> 20    havana_homo_sapiens_37 nonsense_mediated_decay  Transcript   1584
-#> 21    havana_homo_sapiens_37          protein_coding  Transcript    779
-#> 22    havana_homo_sapiens_37          protein_coding  Transcript   1612
-#> 23    havana_homo_sapiens_37          protein_coding  Transcript    958
-#> 24    havana_homo_sapiens_37          protein_coding  Transcript    769
-#> 25    havana_homo_sapiens_37 nonsense_mediated_decay  Transcript    582
-#> 26    havana_homo_sapiens_37          protein_coding  Transcript    455
-#> 27   ensembl_homo_sapiens_37          protein_coding  Transcript   6411
-#> 28   ensembl_homo_sapiens_37          protein_coding  Transcript   3780
-#> 29   ensembl_homo_sapiens_37          protein_coding  Transcript   6451
-#> 30   ensembl_homo_sapiens_37          protein_coding  Transcript   3444
-#> 31   ensembl_homo_sapiens_37          protein_coding  Transcript   7114
-#>            source    start display_name Translation.version Translation.db_type
-#> 1  ensembl_havana 41196312    BRCA1-001                   3                core
-#> 2  ensembl_havana 41196822    BRCA1-007                   1                core
-#> 3          havana 41197580    BRCA1-023                   1                core
-#> 4          havana 41197580    BRCA1-024                   1                core
-#> 5          havana 41197580    BRCA1-025                   1                core
-#> 6  ensembl_havana 41197646    BRCA1-006                   1                core
-#> 7  ensembl_havana 41197646    BRCA1-005                   2                core
-#> 8          havana 41197695    BRCA1-010                   1                core
-#> 9          havana 41197695    BRCA1-014                   2                core
-#> 10         havana 41215361    BRCA1-015                   1                core
-#> 11         havana 41215361    BRCA1-009                   1                core
-#> 12         havana 41215377    BRCA1-008                   1                core
-#> 13         havana 41219291    BRCA1-021                  NA                <NA>
-#> 14         havana 41228505    BRCA1-019                   1                core
-#> 15         havana 41228554    BRCA1-022                   1                core
-#> 16         havana 41243115    BRCA1-012                  NA                <NA>
-#> 17         havana 41245587    BRCA1-026                   3                core
-#> 18         havana 41245601    BRCA1-011                   1                core
-#> 19         havana 41245603    BRCA1-004                   1                core
-#> 20         havana 41246129    BRCA1-002                   1                core
-#> 21         havana 41246129    BRCA1-003                   1                core
-#> 22         havana 41246129    BRCA1-013                   1                core
-#> 23         havana 41246187    BRCA1-018                   1                core
-#> 24         havana 41247863    BRCA1-017                   1                core
-#> 25         havana 41251848    BRCA1-020                   1                core
-#> 26         havana 41256206    BRCA1-016                   1                core
-#> 27        ensembl 41196313    BRCA1-205                   6                core
-#> 28        ensembl 41196313    BRCA1-204                   5                core
-#> 29        ensembl 41196313    BRCA1-202                   4                core
-#> 30        ensembl 41196313    BRCA1-203                   3                core
-#> 31        ensembl 41196313    BRCA1-201                   4                core
-#>    Translation.object_type Translation.Parent Translation.end  Translation.id
-#> 1              Translation    ENST00000357654        41276113 ENSP00000350283
-#> 2              Translation    ENST00000468300        41276113 ENSP00000417148
-#> 3              Translation    ENST00000586385        41277202 ENSP00000465818
-#> 4              Translation    ENST00000591534        41226495 ENSP00000467329
-#> 5              Translation    ENST00000591849        41202109 ENSP00000465347
-#> 6              Translation    ENST00000493795        41258543 ENSP00000418775
-#> 7              Translation    ENST00000471181        41276113 ENSP00000418960
-#> 8              Translation    ENST00000461221        41276113 ENSP00000418548
-#> 9              Translation    ENST00000491747        41276113 ENSP00000420705
-#> 10             Translation    ENST00000484087        41256933 ENSP00000419481
-#> 11             Translation    ENST00000478531        41276113 ENSP00000420412
-#> 12             Translation    ENST00000493919        41258543 ENSP00000418819
-#> 13                    <NA>               <NA>              NA            <NA>
-#> 14             Translation    ENST00000487825        41256933 ENSP00000418212
-#> 15             Translation    ENST00000461574        41243841 ENSP00000417241
-#> 16                    <NA>               <NA>              NA            <NA>
-#> 17             Translation    ENST00000412061        41247883 ENSP00000397145
-#> 18             Translation    ENST00000470026        41276113 ENSP00000419274
-#> 19             Translation    ENST00000477152        41276113 ENSP00000419988
-#> 20             Translation    ENST00000492859        41276113 ENSP00000420253
-#> 21             Translation    ENST00000497488        41246659 ENSP00000418986
-#> 22             Translation    ENST00000494123        41276113 ENSP00000419103
-#> 23             Translation    ENST00000473961        41256908 ENSP00000420201
-#> 24             Translation    ENST00000476777        41276113 ENSP00000417554
-#> 25             Translation    ENST00000461798        41276113 ENSP00000417988
-#> 26             Translation    ENST00000489037        41276113 ENSP00000420781
-#> 27             Translation    ENST00000354071        41276113 ENSP00000326002
-#> 28             Translation    ENST00000352993        41276113 ENSP00000312236
-#> 29             Translation    ENST00000346315        41276113 ENSP00000246907
-#> 30             Translation    ENST00000351666        41276113 ENSP00000338007
-#> 31             Translation    ENST00000309486        41246659 ENSP00000310938
-#>    Translation.start Translation.species Translation.length          Parent
-#> 1           41197695               human               1863 ENSG00000012048
-#> 2           41197801               human                699 ENSG00000012048
-#> 3           41197695               human                173 ENSG00000012048
-#> 4           41197695               human                354 ENSG00000012048
-#> 5           41197695               human                 96 ENSG00000012048
-#> 6           41197695               human               1816 ENSG00000012048
-#> 7           41197695               human               1884 ENSG00000012048
-#> 8           41256972               human                 63 ENSG00000012048
-#> 9           41197695               human                759 ENSG00000012048
-#> 10          41215361               human                498 ENSG00000012048
-#> 11          41215361               human                623 ENSG00000012048
-#> 12          41215377               human                572 ENSG00000012048
-#> 13                NA                <NA>                 NA ENSG00000012048
-#> 14          41228505               human                266 ENSG00000012048
-#> 15          41228554               human                242 ENSG00000012048
-#> 16                NA                <NA>                 NA ENSG00000012048
-#> 17          41245587               human                437 ENSG00000012048
-#> 18          41245601               human                649 ENSG00000012048
-#> 19          41245603               human                622 ENSG00000012048
-#> 20          41262552               human                 59 ENSG00000012048
-#> 21          41246129               human                177 ENSG00000012048
-#> 22          41246129               human                473 ENSG00000012048
-#> 23          41246187               human                319 ENSG00000012048
-#> 24          41247863               human                222 ENSG00000012048
-#> 25          41256972               human                 63 ENSG00000012048
-#> 26          41256206               human                 98 ENSG00000012048
-#> 27          41197695               human               1598 ENSG00000012048
-#> 28          41197695               human                721 ENSG00000012048
-#> 29          41197695               human               1624 ENSG00000012048
-#> 30          41197695               human                680 ENSG00000012048
-#> 31          41197695               human               1567 ENSG00000012048
-#>    seq_region_name      end db_type strand is_canonical         Exon species
-#> 1               17 41277387    core     -1            0 c("human....   human
-#> 2               17 41277468    core     -1            0 c("human....   human
-#> 3               17 41277346    core     -1            0 c("17", ....   human
-#> 4               17 41277346    core     -1            0 c("17", ....   human
-#> 5               17 41277346    core     -1            0 c(-1, -1....   human
-#> 6               17 41277419    core     -1            0 c(1, 1, ....   human
-#> 7               17 41277500    core     -1            1 c(412775....   human
-#> 8               17 41277305    core     -1            0 c(412771....   human
-#> 9               17 41277373    core     -1            0 c(-1, -1....   human
-#> 10              17 41256933    core     -1            0 c(-1, -1....   human
-#> 11              17 41277376    core     -1            0 c("17", ....   human
-#> 12              17 41277419    core     -1            0 c("core"....   human
-#> 13              17 41223083    core     -1            0 c(1, 1),....   human
-#> 14              17 41256933    core     -1            0 c(-1, -1....   human
-#> 15              17 41243841    core     -1            0 c("ENSE0....   human
-#> 16              17 41277332    core     -1            0 c(-1, -1....   human
-#> 17              17 41247883    core     -1            0 c("17", ....   human
-#> 18              17 41277340    core     -1            0 c("17", ....   human
-#> 19              17 41277381    core     -1            0 c("human....   human
-#> 20              17 41277317    core     -1            0 c(-1, -1....   human
-#> 21              17 41277317    core     -1            0 c(1, 1),....   human
-#> 22              17 41277467    core     -1            0 c("GRCh3....   human
-#> 23              17 41256908    core     -1            0 c(412569....   human
-#> 24              17 41277370    core     -1            0 c(-1, -1....   human
-#> 25              17 41277387    core     -1            0 c(-1, -1....   human
-#> 26              17 41277338    core     -1            0 c(-1, -1....   human
-#> 27              17 41277500    core     -1            0 c(-1, -1....   human
-#> 28              17 41277500    core     -1            0 c("core"....   human
-#> 29              17 41277468    core     -1            0 c("core"....   human
-#> 30              17 41276132    core     -1            0 c("core"....   human
-#> 31              17 41277468    core     -1            0 c("17", ....   human
+#> $seq_region_name
+#> [1] "17"
 #> 
-#> $id
-#> [1] "ENSG00000012048"
+#> $species
+#> [1] "human"
 #> 
-#> $canonical_transcript
-#> [1] "ENST00000471181.2"
+#> $strand
+#> [1] -1
 #> 
 #> $object_type
 #> [1] "Gene"
@@ -265,92 +74,259 @@ queryEnsemblByGene("BRCA1", "human", "hg19")
 #> $logic_name
 #> [1] "ensembl_havana_gene_homo_sapiens_37"
 #> 
-#> $assembly_name
-#> [1] "GRCh37"
-#> 
 #> $version
 #> [1] 15
 #> 
-#> $strand
-#> [1] -1
+#> $assembly_name
+#> [1] "GRCh37"
 #> 
-#> $species
-#> [1] "human"
+#> $id
+#> [1] "ENSG00000012048"
 #> 
-#> $end
-#> [1] 41277500
+#> $Transcript
+#>    strand         Exon species is_canonical      end seq_region_name
+#> 1      -1 c("17", ....   human            0 41277387              17
+#> 2      -1 c(412772....   human            0 41277468              17
+#> 3      -1 c("17", ....   human            0 41277346              17
+#> 4      -1 c(412772....   human            0 41277346              17
+#> 5      -1 c(-1, -1....   human            0 41277346              17
+#> 6      -1 c(412772....   human            0 41277419              17
+#> 7      -1 c(412775....   human            1 41277500              17
+#> 8      -1 c(-1, -1....   human            0 41277305              17
+#> 9      -1 c(-1, -1....   human            0 41277373              17
+#> 10     -1 c("ENSE0....   human            0 41256933              17
+#> 11     -1 c("human....   human            0 41277376              17
+#> 12     -1 c("17", ....   human            0 41277419              17
+#> 13     -1 c("GRCh3....   human            0 41223083              17
+#> 14     -1 c(-1, -1....   human            0 41256933              17
+#> 15     -1 c("17", ....   human            0 41243841              17
+#> 16     -1 c(412772....   human            0 41277332              17
+#> 17     -1 c("17", ....   human            0 41247883              17
+#> 18     -1 c("ENSE0....   human            0 41277340              17
+#> 19     -1 c("human....   human            0 41277381              17
+#> 20     -1 c("human....   human            0 41277317              17
+#> 21     -1 c(412772....   human            0 41277317              17
+#> 22     -1 c(-1, -1....   human            0 41277467              17
+#> 23     -1 c("Exon"....   human            0 41256908              17
+#> 24     -1 c("core"....   human            0 41277370              17
+#> 25     -1 c(-1, -1....   human            0 41277387              17
+#> 26     -1 c(412773....   human            0 41277338              17
+#> 27     -1 c("ENSE0....   human            0 41277500              17
+#> 28     -1 c(1, 1, ....   human            0 41277500              17
+#> 29     -1 c(-1, -1....   human            0 41277468              17
+#> 30     -1 c("17", ....   human            0 41276132              17
+#> 31     -1 c(412772....   human            0 41277468              17
+#>             Parent db_type         source length display_name
+#> 1  ENSG00000012048    core ensembl_havana   7094    BRCA1-001
+#> 2  ENSG00000012048    core ensembl_havana   3273    BRCA1-007
+#> 3  ENSG00000012048    core         havana    781    BRCA1-023
+#> 4  ENSG00000012048    core         havana   1282    BRCA1-024
+#> 5  ENSG00000012048    core         havana    563    BRCA1-025
+#> 6  ENSG00000012048    core ensembl_havana   5732    BRCA1-006
+#> 7  ENSG00000012048    core ensembl_havana   5936    BRCA1-005
+#> 8  ENSG00000012048    core         havana   5693    BRCA1-010
+#> 9  ENSG00000012048    core         havana   2379    BRCA1-014
+#> 10 ENSG00000012048    core         havana   1495    BRCA1-015
+#> 11 ENSG00000012048    core         havana   1972    BRCA1-009
+#> 12 ENSG00000012048    core         havana   1948    BRCA1-008
+#> 13 ENSG00000012048    core         havana    561    BRCA1-021
+#> 14 ENSG00000012048    core         havana    800    BRCA1-019
+#> 15 ENSG00000012048    core         havana    726    BRCA1-022
+#> 16 ENSG00000012048    core         havana   4497    BRCA1-012
+#> 17 ENSG00000012048    core         havana   1312    BRCA1-026
+#> 18 ENSG00000012048    core         havana   2108    BRCA1-011
+#> 19 ENSG00000012048    core         havana   1980    BRCA1-004
+#> 20 ENSG00000012048    core         havana   1584    BRCA1-002
+#> 21 ENSG00000012048    core         havana    779    BRCA1-003
+#> 22 ENSG00000012048    core         havana   1612    BRCA1-013
+#> 23 ENSG00000012048    core         havana    958    BRCA1-018
+#> 24 ENSG00000012048    core         havana    769    BRCA1-017
+#> 25 ENSG00000012048    core         havana    582    BRCA1-020
+#> 26 ENSG00000012048    core         havana    455    BRCA1-016
+#> 27 ENSG00000012048    core        ensembl   6411    BRCA1-205
+#> 28 ENSG00000012048    core        ensembl   3780    BRCA1-204
+#> 29 ENSG00000012048    core        ensembl   6451    BRCA1-202
+#> 30 ENSG00000012048    core        ensembl   3444    BRCA1-203
+#> 31 ENSG00000012048    core        ensembl   7114    BRCA1-201
+#>    Translation.length Translation.start Translation.species Translation.Parent
+#> 1                1863          41197695               human    ENST00000357654
+#> 2                 699          41197801               human    ENST00000468300
+#> 3                 173          41197695               human    ENST00000586385
+#> 4                 354          41197695               human    ENST00000591534
+#> 5                  96          41197695               human    ENST00000591849
+#> 6                1816          41197695               human    ENST00000493795
+#> 7                1884          41197695               human    ENST00000471181
+#> 8                  63          41256972               human    ENST00000461221
+#> 9                 759          41197695               human    ENST00000491747
+#> 10                498          41215361               human    ENST00000484087
+#> 11                623          41215361               human    ENST00000478531
+#> 12                572          41215377               human    ENST00000493919
+#> 13                 NA                NA                <NA>               <NA>
+#> 14                266          41228505               human    ENST00000487825
+#> 15                242          41228554               human    ENST00000461574
+#> 16                 NA                NA                <NA>               <NA>
+#> 17                437          41245587               human    ENST00000412061
+#> 18                649          41245601               human    ENST00000470026
+#> 19                622          41245603               human    ENST00000477152
+#> 20                 59          41262552               human    ENST00000492859
+#> 21                177          41246129               human    ENST00000497488
+#> 22                473          41246129               human    ENST00000494123
+#> 23                319          41246187               human    ENST00000473961
+#> 24                222          41247863               human    ENST00000476777
+#> 25                 63          41256972               human    ENST00000461798
+#> 26                 98          41256206               human    ENST00000489037
+#> 27               1598          41197695               human    ENST00000354071
+#> 28                721          41197695               human    ENST00000352993
+#> 29               1624          41197695               human    ENST00000346315
+#> 30                680          41197695               human    ENST00000351666
+#> 31               1567          41197695               human    ENST00000309486
+#>    Translation.end  Translation.id Translation.version Translation.db_type
+#> 1         41276113 ENSP00000350283                   3                core
+#> 2         41276113 ENSP00000417148                   1                core
+#> 3         41277202 ENSP00000465818                   1                core
+#> 4         41226495 ENSP00000467329                   1                core
+#> 5         41202109 ENSP00000465347                   1                core
+#> 6         41258543 ENSP00000418775                   1                core
+#> 7         41276113 ENSP00000418960                   2                core
+#> 8         41276113 ENSP00000418548                   1                core
+#> 9         41276113 ENSP00000420705                   2                core
+#> 10        41256933 ENSP00000419481                   1                core
+#> 11        41276113 ENSP00000420412                   1                core
+#> 12        41258543 ENSP00000418819                   1                core
+#> 13              NA            <NA>                  NA                <NA>
+#> 14        41256933 ENSP00000418212                   1                core
+#> 15        41243841 ENSP00000417241                   1                core
+#> 16              NA            <NA>                  NA                <NA>
+#> 17        41247883 ENSP00000397145                   3                core
+#> 18        41276113 ENSP00000419274                   1                core
+#> 19        41276113 ENSP00000419988                   1                core
+#> 20        41276113 ENSP00000420253                   1                core
+#> 21        41246659 ENSP00000418986                   1                core
+#> 22        41276113 ENSP00000419103                   1                core
+#> 23        41256908 ENSP00000420201                   1                core
+#> 24        41276113 ENSP00000417554                   1                core
+#> 25        41276113 ENSP00000417988                   1                core
+#> 26        41276113 ENSP00000420781                   1                core
+#> 27        41276113 ENSP00000326002                   6                core
+#> 28        41276113 ENSP00000312236                   5                core
+#> 29        41276113 ENSP00000246907                   4                core
+#> 30        41276113 ENSP00000338007                   3                core
+#> 31        41246659 ENSP00000310938                   4                core
+#>    Translation.object_type    start              id gencode_primary
+#> 1              Translation 41196312 ENST00000357654               0
+#> 2              Translation 41196822 ENST00000468300               0
+#> 3              Translation 41197580 ENST00000586385               0
+#> 4              Translation 41197580 ENST00000591534               0
+#> 5              Translation 41197580 ENST00000591849               0
+#> 6              Translation 41197646 ENST00000493795               0
+#> 7              Translation 41197646 ENST00000471181               0
+#> 8              Translation 41197695 ENST00000461221               0
+#> 9              Translation 41197695 ENST00000491747               0
+#> 10             Translation 41215361 ENST00000484087               0
+#> 11             Translation 41215361 ENST00000478531               0
+#> 12             Translation 41215377 ENST00000493919               0
+#> 13                    <NA> 41219291 ENST00000472490               0
+#> 14             Translation 41228505 ENST00000487825               0
+#> 15             Translation 41228554 ENST00000461574               0
+#> 16                    <NA> 41243115 ENST00000467274               0
+#> 17             Translation 41245587 ENST00000412061               0
+#> 18             Translation 41245601 ENST00000470026               0
+#> 19             Translation 41245603 ENST00000477152               0
+#> 20             Translation 41246129 ENST00000492859               0
+#> 21             Translation 41246129 ENST00000497488               0
+#> 22             Translation 41246129 ENST00000494123               0
+#> 23             Translation 41246187 ENST00000473961               0
+#> 24             Translation 41247863 ENST00000476777               0
+#> 25             Translation 41251848 ENST00000461798               0
+#> 26             Translation 41256206 ENST00000489037               0
+#> 27             Translation 41196313 ENST00000354071               0
+#> 28             Translation 41196313 ENST00000352993               0
+#> 29             Translation 41196313 ENST00000346315               0
+#> 30             Translation 41196313 ENST00000351666               0
+#> 31             Translation 41196313 ENST00000309486               0
+#>                   logic_name object_type                 biotype assembly_name
+#> 1  ensembl_havana_transcript  Transcript          protein_coding        GRCh37
+#> 2  ensembl_havana_transcript  Transcript          protein_coding        GRCh37
+#> 3     havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 4     havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 5     havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 6  ensembl_havana_transcript  Transcript          protein_coding        GRCh37
+#> 7  ensembl_havana_transcript  Transcript          protein_coding        GRCh37
+#> 8     havana_homo_sapiens_37  Transcript nonsense_mediated_decay        GRCh37
+#> 9     havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 10    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 11    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 12    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 13    havana_homo_sapiens_37  Transcript         retained_intron        GRCh37
+#> 14    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 15    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 16    havana_homo_sapiens_37  Transcript         retained_intron        GRCh37
+#> 17    havana_homo_sapiens_37  Transcript          non_stop_decay        GRCh37
+#> 18    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 19    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 20    havana_homo_sapiens_37  Transcript nonsense_mediated_decay        GRCh37
+#> 21    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 22    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 23    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 24    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 25    havana_homo_sapiens_37  Transcript nonsense_mediated_decay        GRCh37
+#> 26    havana_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 27   ensembl_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 28   ensembl_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 29   ensembl_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 30   ensembl_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#> 31   ensembl_homo_sapiens_37  Transcript          protein_coding        GRCh37
+#>    version
+#> 1        3
+#> 2        1
+#> 3        1
+#> 4        1
+#> 5        1
+#> 6        1
+#> 7        2
+#> 8        1
+#> 9        2
+#> 10       1
+#> 11       1
+#> 12       1
+#> 13       1
+#> 14       1
+#> 15       1
+#> 16       1
+#> 17       3
+#> 18       1
+#> 19       1
+#> 20       1
+#> 21       1
+#> 22       1
+#> 23       1
+#> 24       1
+#> 25       1
+#> 26       1
+#> 27       3
+#> 28       3
+#> 29       3
+#> 30       3
+#> 31       4
 #> 
-#> $seq_region_name
-#> [1] "17"
+#> $canonical_transcript
+#> [1] "ENST00000471181.2"
 #> 
-#> $db_type
-#> [1] "core"
+#> $display_name
+#> [1] "BRCA1"
 #> 
-#> $description
-#> [1] "breast cancer 1, early onset [Source:HGNC Symbol;Acc:1100]"
+#> $start
+#> [1] 41196312
 #> 
-queryEnsemblByGene("ENSG00000139618")
 #> $source
 #> [1] "ensembl_havana"
 #> 
+queryEnsemblByGene("ENSG00000139618")
+#> $display_name
+#> [1] "BRCA2"
+#> 
 #> $strand
 #> [1] 1
-#> 
-#> $logic_name
-#> [1] "ensembl_havana_gene_homo_sapiens_37"
-#> 
-#> $canonical_transcript
-#> [1] "ENST00000544455.1"
-#> 
-#> $id
-#> [1] "ENSG00000139618"
-#> 
-#> $Transcript
-#>      start length display_name gencode_primary Translation.length
-#> 1 32889611  10930    BRCA2-001               0               3418
-#> 2 32889642   2011    BRCA2-003               0                481
-#> 3 32945108    495    BRCA2-005               0                 64
-#> 4 32953977    842    BRCA2-002               0                186
-#> 5 32970946    523    BRCA2-006               0                 NA
-#> 6 32889617  10984    BRCA2-201               0               3418
-#>   Translation.start  Translation.id Translation.version Translation.db_type
-#> 1          32890598 ENSP00000369497                   3                core
-#> 2          32899266 ENSP00000435699                   2                core
-#> 3          32945108 ENSP00000433168                   1                core
-#> 4          32953977 ENSP00000434898                   1                core
-#> 5                NA            <NA>                  NA                <NA>
-#> 6          32890598 ENSP00000439902                   1                core
-#>   Translation.end Translation.Parent Translation.object_type
-#> 1        32972907    ENST00000380152             Translation
-#> 2        32907428    ENST00000530893             Translation
-#> 3        32950807    ENST00000528762             Translation
-#> 4        32970229    ENST00000470094             Translation
-#> 5              NA               <NA>                    <NA>
-#> 6        32972907    ENST00000544455             Translation
-#>   Translation.species      end version assembly_name db_type          Parent
-#> 1        homo_sapiens 32973347       3        GRCh37    core ENSG00000139618
-#> 2        homo_sapiens 32907428       2        GRCh37    core ENSG00000139618
-#> 3        homo_sapiens 32953632       1        GRCh37    core ENSG00000139618
-#> 4        homo_sapiens 32972409       1        GRCh37    core ENSG00000139618
-#> 5                <NA> 32972585       1        GRCh37    core ENSG00000139618
-#> 6        homo_sapiens 32973805       1        GRCh37    core ENSG00000139618
-#>   seq_region_name      species strand         source                logic_name
-#> 1              13 homo_sapiens      1 ensembl_havana ensembl_havana_transcript
-#> 2              13 homo_sapiens      1         havana    havana_homo_sapiens_37
-#> 3              13 homo_sapiens      1         havana    havana_homo_sapiens_37
-#> 4              13 homo_sapiens      1         havana    havana_homo_sapiens_37
-#> 5              13 homo_sapiens      1         havana    havana_homo_sapiens_37
-#> 6              13 homo_sapiens      1        ensembl   ensembl_homo_sapiens_37
-#>   is_canonical              id                 biotype         Exon object_type
-#> 1            0 ENST00000380152          protein_coding c(328898....  Transcript
-#> 2            0 ENST00000530893          protein_coding c("Exon"....  Transcript
-#> 3            0 ENST00000528762 nonsense_mediated_decay c(329452....  Transcript
-#> 4            0 ENST00000470094 nonsense_mediated_decay c(1, 1, ....  Transcript
-#> 5            0 ENST00000533776         retained_intron c(1, 1),....  Transcript
-#> 6            1 ENST00000544455          protein_coding c("13", ....  Transcript
-#> 
-#> $biotype
-#> [1] "protein_coding"
 #> 
 #> $object_type
 #> [1] "Gene"
@@ -358,246 +334,100 @@ queryEnsemblByGene("ENSG00000139618")
 #> $start
 #> [1] 32889611
 #> 
-#> $display_name
-#> [1] "BRCA2"
+#> $canonical_transcript
+#> [1] "ENST00000544455.1"
+#> 
+#> $logic_name
+#> [1] "ensembl_havana_gene_homo_sapiens_37"
+#> 
+#> $source
+#> [1] "ensembl_havana"
+#> 
+#> $id
+#> [1] "ENSG00000139618"
 #> 
 #> $end
 #> [1] 32973805
 #> 
-#> $assembly_name
-#> [1] "GRCh37"
-#> 
-#> $version
-#> [1] 10
-#> 
 #> $db_type
 #> [1] "core"
-#> 
-#> $seq_region_name
-#> [1] "13"
 #> 
 #> $description
 #> [1] "breast cancer 2, early onset [Source:HGNC Symbol;Acc:1101]"
 #> 
-#> $species
-#> [1] "homo_sapiens"
+#> $assembly_name
+#> [1] "GRCh37"
 #> 
-event <- "SE_17_-_41251792_41249306_41249261_41246877_BRCA1"
-queryEnsemblByEvent(event, species="human", assembly="hg19")
 #> $biotype
 #> [1] "protein_coding"
 #> 
-#> $object_type
-#> [1] "Gene"
+#> $version
+#> [1] 10
 #> 
-#> $description
-#> [1] "breast cancer 1, early onset [Source:HGNC Symbol;Acc:1100]"
+#> $seq_region_name
+#> [1] "13"
 #> 
-#> $start
-#> [1] 41196312
-#> 
-#> $end
-#> [1] 41277500
+#> $species
+#> [1] "homo_sapiens"
 #> 
 #> $Transcript
-#>    gencode_primary                logic_name         Exon db_type      end
-#> 1                0 ensembl_havana_transcript c(412772....    core 41277387
-#> 2                0 ensembl_havana_transcript c(-1, -1....    core 41277468
-#> 3                0    havana_homo_sapiens_37 c(412773....    core 41277346
-#> 4                0    havana_homo_sapiens_37 c("human....    core 41277346
-#> 5                0    havana_homo_sapiens_37 c("human....    core 41277346
-#> 6                0 ensembl_havana_transcript c("ENSE0....    core 41277419
-#> 7                0 ensembl_havana_transcript c("ENSE0....    core 41277500
-#> 8                0    havana_homo_sapiens_37 c(-1, -1....    core 41277305
-#> 9                0    havana_homo_sapiens_37 c(1, 1, ....    core 41277373
-#> 10               0    havana_homo_sapiens_37 c("Exon"....    core 41256933
-#> 11               0    havana_homo_sapiens_37 c("Exon"....    core 41277376
-#> 12               0    havana_homo_sapiens_37 c(-1, -1....    core 41277419
-#> 13               0    havana_homo_sapiens_37 c("human....    core 41223083
-#> 14               0    havana_homo_sapiens_37 c("core"....    core 41256933
-#> 15               0    havana_homo_sapiens_37 c(-1, -1....    core 41243841
-#> 16               0    havana_homo_sapiens_37 c(1, 1, ....    core 41277332
-#> 17               0    havana_homo_sapiens_37 c("Exon"....    core 41247883
-#> 18               0    havana_homo_sapiens_37 c(1, 1, ....    core 41277340
-#> 19               0    havana_homo_sapiens_37 c("ENSE0....    core 41277381
-#> 20               0    havana_homo_sapiens_37 c(412773....    core 41277317
-#> 21               0    havana_homo_sapiens_37 c("human....    core 41277317
-#> 22               0    havana_homo_sapiens_37 c(412774....    core 41277467
-#> 23               0    havana_homo_sapiens_37 c(1, 1, ....    core 41256908
-#> 24               0    havana_homo_sapiens_37 c("human....    core 41277370
-#> 25               0    havana_homo_sapiens_37 c(1, 1, ....    core 41277387
-#> 26               0    havana_homo_sapiens_37 c(412773....    core 41277338
-#> 27               0   ensembl_homo_sapiens_37 c(1, 1, ....    core 41277500
-#> 28               0   ensembl_homo_sapiens_37 c(1, 1, ....    core 41277500
-#> 29               0   ensembl_homo_sapiens_37 c("17", ....    core 41277468
-#> 30               0   ensembl_homo_sapiens_37 c("core"....    core 41276132
-#> 31               0   ensembl_homo_sapiens_37 c(1, 1, ....    core 41277468
-#>       start object_type length                 biotype is_canonical species
-#> 1  41196312  Transcript   7094          protein_coding            0   human
-#> 2  41196822  Transcript   3273          protein_coding            0   human
-#> 3  41197580  Transcript    781          protein_coding            0   human
-#> 4  41197580  Transcript   1282          protein_coding            0   human
-#> 5  41197580  Transcript    563          protein_coding            0   human
-#> 6  41197646  Transcript   5732          protein_coding            0   human
-#> 7  41197646  Transcript   5936          protein_coding            1   human
-#> 8  41197695  Transcript   5693 nonsense_mediated_decay            0   human
-#> 9  41197695  Transcript   2379          protein_coding            0   human
-#> 10 41215361  Transcript   1495          protein_coding            0   human
-#> 11 41215361  Transcript   1972          protein_coding            0   human
-#> 12 41215377  Transcript   1948          protein_coding            0   human
-#> 13 41219291  Transcript    561         retained_intron            0   human
-#> 14 41228505  Transcript    800          protein_coding            0   human
-#> 15 41228554  Transcript    726          protein_coding            0   human
-#> 16 41243115  Transcript   4497         retained_intron            0   human
-#> 17 41245587  Transcript   1312          non_stop_decay            0   human
-#> 18 41245601  Transcript   2108          protein_coding            0   human
-#> 19 41245603  Transcript   1980          protein_coding            0   human
-#> 20 41246129  Transcript   1584 nonsense_mediated_decay            0   human
-#> 21 41246129  Transcript    779          protein_coding            0   human
-#> 22 41246129  Transcript   1612          protein_coding            0   human
-#> 23 41246187  Transcript    958          protein_coding            0   human
-#> 24 41247863  Transcript    769          protein_coding            0   human
-#> 25 41251848  Transcript    582 nonsense_mediated_decay            0   human
-#> 26 41256206  Transcript    455          protein_coding            0   human
-#> 27 41196313  Transcript   6411          protein_coding            0   human
-#> 28 41196313  Transcript   3780          protein_coding            0   human
-#> 29 41196313  Transcript   6451          protein_coding            0   human
-#> 30 41196313  Transcript   3444          protein_coding            0   human
-#> 31 41196313  Transcript   7114          protein_coding            0   human
-#>    strand version display_name assembly_name         source          Parent
-#> 1      -1       3    BRCA1-001        GRCh37 ensembl_havana ENSG00000012048
-#> 2      -1       1    BRCA1-007        GRCh37 ensembl_havana ENSG00000012048
-#> 3      -1       1    BRCA1-023        GRCh37         havana ENSG00000012048
-#> 4      -1       1    BRCA1-024        GRCh37         havana ENSG00000012048
-#> 5      -1       1    BRCA1-025        GRCh37         havana ENSG00000012048
-#> 6      -1       1    BRCA1-006        GRCh37 ensembl_havana ENSG00000012048
-#> 7      -1       2    BRCA1-005        GRCh37 ensembl_havana ENSG00000012048
-#> 8      -1       1    BRCA1-010        GRCh37         havana ENSG00000012048
-#> 9      -1       2    BRCA1-014        GRCh37         havana ENSG00000012048
-#> 10     -1       1    BRCA1-015        GRCh37         havana ENSG00000012048
-#> 11     -1       1    BRCA1-009        GRCh37         havana ENSG00000012048
-#> 12     -1       1    BRCA1-008        GRCh37         havana ENSG00000012048
-#> 13     -1       1    BRCA1-021        GRCh37         havana ENSG00000012048
-#> 14     -1       1    BRCA1-019        GRCh37         havana ENSG00000012048
-#> 15     -1       1    BRCA1-022        GRCh37         havana ENSG00000012048
-#> 16     -1       1    BRCA1-012        GRCh37         havana ENSG00000012048
-#> 17     -1       3    BRCA1-026        GRCh37         havana ENSG00000012048
-#> 18     -1       1    BRCA1-011        GRCh37         havana ENSG00000012048
-#> 19     -1       1    BRCA1-004        GRCh37         havana ENSG00000012048
-#> 20     -1       1    BRCA1-002        GRCh37         havana ENSG00000012048
-#> 21     -1       1    BRCA1-003        GRCh37         havana ENSG00000012048
-#> 22     -1       1    BRCA1-013        GRCh37         havana ENSG00000012048
-#> 23     -1       1    BRCA1-018        GRCh37         havana ENSG00000012048
-#> 24     -1       1    BRCA1-017        GRCh37         havana ENSG00000012048
-#> 25     -1       1    BRCA1-020        GRCh37         havana ENSG00000012048
-#> 26     -1       1    BRCA1-016        GRCh37         havana ENSG00000012048
-#> 27     -1       3    BRCA1-205        GRCh37        ensembl ENSG00000012048
-#> 28     -1       3    BRCA1-204        GRCh37        ensembl ENSG00000012048
-#> 29     -1       3    BRCA1-202        GRCh37        ensembl ENSG00000012048
-#> 30     -1       3    BRCA1-203        GRCh37        ensembl ENSG00000012048
-#> 31     -1       4    BRCA1-201        GRCh37        ensembl ENSG00000012048
-#>    seq_region_name Translation.Parent Translation.object_type  Translation.id
-#> 1               17    ENST00000357654             Translation ENSP00000350283
-#> 2               17    ENST00000468300             Translation ENSP00000417148
-#> 3               17    ENST00000586385             Translation ENSP00000465818
-#> 4               17    ENST00000591534             Translation ENSP00000467329
-#> 5               17    ENST00000591849             Translation ENSP00000465347
-#> 6               17    ENST00000493795             Translation ENSP00000418775
-#> 7               17    ENST00000471181             Translation ENSP00000418960
-#> 8               17    ENST00000461221             Translation ENSP00000418548
-#> 9               17    ENST00000491747             Translation ENSP00000420705
-#> 10              17    ENST00000484087             Translation ENSP00000419481
-#> 11              17    ENST00000478531             Translation ENSP00000420412
-#> 12              17    ENST00000493919             Translation ENSP00000418819
-#> 13              17               <NA>                    <NA>            <NA>
-#> 14              17    ENST00000487825             Translation ENSP00000418212
-#> 15              17    ENST00000461574             Translation ENSP00000417241
-#> 16              17               <NA>                    <NA>            <NA>
-#> 17              17    ENST00000412061             Translation ENSP00000397145
-#> 18              17    ENST00000470026             Translation ENSP00000419274
-#> 19              17    ENST00000477152             Translation ENSP00000419988
-#> 20              17    ENST00000492859             Translation ENSP00000420253
-#> 21              17    ENST00000497488             Translation ENSP00000418986
-#> 22              17    ENST00000494123             Translation ENSP00000419103
-#> 23              17    ENST00000473961             Translation ENSP00000420201
-#> 24              17    ENST00000476777             Translation ENSP00000417554
-#> 25              17    ENST00000461798             Translation ENSP00000417988
-#> 26              17    ENST00000489037             Translation ENSP00000420781
-#> 27              17    ENST00000354071             Translation ENSP00000326002
-#> 28              17    ENST00000352993             Translation ENSP00000312236
-#> 29              17    ENST00000346315             Translation ENSP00000246907
-#> 30              17    ENST00000351666             Translation ENSP00000338007
-#> 31              17    ENST00000309486             Translation ENSP00000310938
-#>    Translation.length Translation.end Translation.db_type Translation.start
-#> 1                1863        41276113                core          41197695
-#> 2                 699        41276113                core          41197801
-#> 3                 173        41277202                core          41197695
-#> 4                 354        41226495                core          41197695
-#> 5                  96        41202109                core          41197695
-#> 6                1816        41258543                core          41197695
-#> 7                1884        41276113                core          41197695
-#> 8                  63        41276113                core          41256972
-#> 9                 759        41276113                core          41197695
-#> 10                498        41256933                core          41215361
-#> 11                623        41276113                core          41215361
-#> 12                572        41258543                core          41215377
-#> 13                 NA              NA                <NA>                NA
-#> 14                266        41256933                core          41228505
-#> 15                242        41243841                core          41228554
-#> 16                 NA              NA                <NA>                NA
-#> 17                437        41247883                core          41245587
-#> 18                649        41276113                core          41245601
-#> 19                622        41276113                core          41245603
-#> 20                 59        41276113                core          41262552
-#> 21                177        41246659                core          41246129
-#> 22                473        41276113                core          41246129
-#> 23                319        41256908                core          41246187
-#> 24                222        41276113                core          41247863
-#> 25                 63        41276113                core          41256972
-#> 26                 98        41276113                core          41256206
-#> 27               1598        41276113                core          41197695
-#> 28                721        41276113                core          41197695
-#> 29               1624        41276113                core          41197695
-#> 30                680        41276113                core          41197695
-#> 31               1567        41246659                core          41197695
-#>    Translation.species Translation.version              id
-#> 1                human                   3 ENST00000357654
-#> 2                human                   1 ENST00000468300
-#> 3                human                   1 ENST00000586385
-#> 4                human                   1 ENST00000591534
-#> 5                human                   1 ENST00000591849
-#> 6                human                   1 ENST00000493795
-#> 7                human                   2 ENST00000471181
-#> 8                human                   1 ENST00000461221
-#> 9                human                   2 ENST00000491747
-#> 10               human                   1 ENST00000484087
-#> 11               human                   1 ENST00000478531
-#> 12               human                   1 ENST00000493919
-#> 13                <NA>                  NA ENST00000472490
-#> 14               human                   1 ENST00000487825
-#> 15               human                   1 ENST00000461574
-#> 16                <NA>                  NA ENST00000467274
-#> 17               human                   3 ENST00000412061
-#> 18               human                   1 ENST00000470026
-#> 19               human                   1 ENST00000477152
-#> 20               human                   1 ENST00000492859
-#> 21               human                   1 ENST00000497488
-#> 22               human                   1 ENST00000494123
-#> 23               human                   1 ENST00000473961
-#> 24               human                   1 ENST00000476777
-#> 25               human                   1 ENST00000461798
-#> 26               human                   1 ENST00000489037
-#> 27               human                   6 ENST00000354071
-#> 28               human                   5 ENST00000352993
-#> 29               human                   4 ENST00000346315
-#> 30               human                   3 ENST00000351666
-#> 31               human                   4 ENST00000309486
+#>      start object_type gencode_primary strand display_name is_canonical
+#> 1 32889611  Transcript               0      1    BRCA2-001            0
+#> 2 32889642  Transcript               0      1    BRCA2-003            0
+#> 3 32945108  Transcript               0      1    BRCA2-005            0
+#> 4 32953977  Transcript               0      1    BRCA2-002            0
+#> 5 32970946  Transcript               0      1    BRCA2-006            0
+#> 6 32889617  Transcript               0      1    BRCA2-201            1
+#>   Translation.object_type Translation.start Translation.Parent
+#> 1             Translation          32890598    ENST00000380152
+#> 2             Translation          32899266    ENST00000530893
+#> 3             Translation          32945108    ENST00000528762
+#> 4             Translation          32953977    ENST00000470094
+#> 5                    <NA>                NA               <NA>
+#> 6             Translation          32890598    ENST00000544455
+#>   Translation.db_type Translation.end  Translation.id Translation.species
+#> 1                core        32972907 ENSP00000369497        homo_sapiens
+#> 2                core        32907428 ENSP00000435699        homo_sapiens
+#> 3                core        32950807 ENSP00000433168        homo_sapiens
+#> 4                core        32970229 ENSP00000434898        homo_sapiens
+#> 5                <NA>              NA            <NA>                <NA>
+#> 6                core        32972907 ENSP00000439902        homo_sapiens
+#>   Translation.length Translation.version length db_type          Parent
+#> 1               3418                   3  10930    core ENSG00000139618
+#> 2                481                   2   2011    core ENSG00000139618
+#> 3                 64                   1    495    core ENSG00000139618
+#> 4                186                   1    842    core ENSG00000139618
+#> 5                 NA                  NA    523    core ENSG00000139618
+#> 6               3418                   1  10984    core ENSG00000139618
+#>        end                logic_name         source              id
+#> 1 32973347 ensembl_havana_transcript ensembl_havana ENST00000380152
+#> 2 32907428    havana_homo_sapiens_37         havana ENST00000530893
+#> 3 32953632    havana_homo_sapiens_37         havana ENST00000528762
+#> 4 32972409    havana_homo_sapiens_37         havana ENST00000470094
+#> 5 32972585    havana_homo_sapiens_37         havana ENST00000533776
+#> 6 32973805   ensembl_homo_sapiens_37        ensembl ENST00000544455
+#>        species         Exon version                 biotype assembly_name
+#> 1 homo_sapiens c("13", ....       3          protein_coding        GRCh37
+#> 2 homo_sapiens c("Exon"....       2          protein_coding        GRCh37
+#> 3 homo_sapiens c("homo_....       1 nonsense_mediated_decay        GRCh37
+#> 4 homo_sapiens c("ENSE0....       1 nonsense_mediated_decay        GRCh37
+#> 5 homo_sapiens c("Exon"....       1         retained_intron        GRCh37
+#> 6 homo_sapiens c(1, 1, ....       1          protein_coding        GRCh37
+#>   seq_region_name
+#> 1              13
+#> 2              13
+#> 3              13
+#> 4              13
+#> 5              13
+#> 6              13
 #> 
-#> $db_type
-#> [1] "core"
+event <- "SE_17_-_41251792_41249306_41249261_41246877_BRCA1"
+queryEnsemblByEvent(event, species="human", assembly="hg19")
+#> $assembly_name
+#> [1] "GRCh37"
 #> 
-#> $logic_name
-#> [1] "ensembl_havana_gene_homo_sapiens_37"
+#> $display_name
+#> [1] "BRCA1"
 #> 
 #> $seq_region_name
 #> [1] "17"
@@ -608,22 +438,231 @@ queryEnsemblByEvent(event, species="human", assembly="hg19")
 #> $source
 #> [1] "ensembl_havana"
 #> 
-#> $assembly_name
-#> [1] "GRCh37"
-#> 
-#> $display_name
-#> [1] "BRCA1"
+#> $canonical_transcript
+#> [1] "ENST00000471181.2"
 #> 
 #> $version
 #> [1] 15
 #> 
-#> $strand
-#> [1] -1
-#> 
 #> $species
 #> [1] "human"
 #> 
-#> $canonical_transcript
-#> [1] "ENST00000471181.2"
+#> $strand
+#> [1] -1
+#> 
+#> $start
+#> [1] 41196312
+#> 
+#> $end
+#> [1] 41277500
+#> 
+#> $Transcript
+#>    is_canonical species strand version display_name assembly_name
+#> 1             0   human     -1       3    BRCA1-001        GRCh37
+#> 2             0   human     -1       1    BRCA1-007        GRCh37
+#> 3             0   human     -1       1    BRCA1-023        GRCh37
+#> 4             0   human     -1       1    BRCA1-024        GRCh37
+#> 5             0   human     -1       1    BRCA1-025        GRCh37
+#> 6             0   human     -1       1    BRCA1-006        GRCh37
+#> 7             1   human     -1       2    BRCA1-005        GRCh37
+#> 8             0   human     -1       1    BRCA1-010        GRCh37
+#> 9             0   human     -1       2    BRCA1-014        GRCh37
+#> 10            0   human     -1       1    BRCA1-015        GRCh37
+#> 11            0   human     -1       1    BRCA1-009        GRCh37
+#> 12            0   human     -1       1    BRCA1-008        GRCh37
+#> 13            0   human     -1       1    BRCA1-021        GRCh37
+#> 14            0   human     -1       1    BRCA1-019        GRCh37
+#> 15            0   human     -1       1    BRCA1-022        GRCh37
+#> 16            0   human     -1       1    BRCA1-012        GRCh37
+#> 17            0   human     -1       3    BRCA1-026        GRCh37
+#> 18            0   human     -1       1    BRCA1-011        GRCh37
+#> 19            0   human     -1       1    BRCA1-004        GRCh37
+#> 20            0   human     -1       1    BRCA1-002        GRCh37
+#> 21            0   human     -1       1    BRCA1-003        GRCh37
+#> 22            0   human     -1       1    BRCA1-013        GRCh37
+#> 23            0   human     -1       1    BRCA1-018        GRCh37
+#> 24            0   human     -1       1    BRCA1-017        GRCh37
+#> 25            0   human     -1       1    BRCA1-020        GRCh37
+#> 26            0   human     -1       1    BRCA1-016        GRCh37
+#> 27            0   human     -1       3    BRCA1-205        GRCh37
+#> 28            0   human     -1       3    BRCA1-204        GRCh37
+#> 29            0   human     -1       3    BRCA1-202        GRCh37
+#> 30            0   human     -1       3    BRCA1-203        GRCh37
+#> 31            0   human     -1       4    BRCA1-201        GRCh37
+#>             Parent         source seq_region_name Translation.object_type
+#> 1  ENSG00000012048 ensembl_havana              17             Translation
+#> 2  ENSG00000012048 ensembl_havana              17             Translation
+#> 3  ENSG00000012048         havana              17             Translation
+#> 4  ENSG00000012048         havana              17             Translation
+#> 5  ENSG00000012048         havana              17             Translation
+#> 6  ENSG00000012048 ensembl_havana              17             Translation
+#> 7  ENSG00000012048 ensembl_havana              17             Translation
+#> 8  ENSG00000012048         havana              17             Translation
+#> 9  ENSG00000012048         havana              17             Translation
+#> 10 ENSG00000012048         havana              17             Translation
+#> 11 ENSG00000012048         havana              17             Translation
+#> 12 ENSG00000012048         havana              17             Translation
+#> 13 ENSG00000012048         havana              17                    <NA>
+#> 14 ENSG00000012048         havana              17             Translation
+#> 15 ENSG00000012048         havana              17             Translation
+#> 16 ENSG00000012048         havana              17                    <NA>
+#> 17 ENSG00000012048         havana              17             Translation
+#> 18 ENSG00000012048         havana              17             Translation
+#> 19 ENSG00000012048         havana              17             Translation
+#> 20 ENSG00000012048         havana              17             Translation
+#> 21 ENSG00000012048         havana              17             Translation
+#> 22 ENSG00000012048         havana              17             Translation
+#> 23 ENSG00000012048         havana              17             Translation
+#> 24 ENSG00000012048         havana              17             Translation
+#> 25 ENSG00000012048         havana              17             Translation
+#> 26 ENSG00000012048         havana              17             Translation
+#> 27 ENSG00000012048        ensembl              17             Translation
+#> 28 ENSG00000012048        ensembl              17             Translation
+#> 29 ENSG00000012048        ensembl              17             Translation
+#> 30 ENSG00000012048        ensembl              17             Translation
+#> 31 ENSG00000012048        ensembl              17             Translation
+#>    Translation.Parent  Translation.id Translation.length Translation.db_type
+#> 1     ENST00000357654 ENSP00000350283               1863                core
+#> 2     ENST00000468300 ENSP00000417148                699                core
+#> 3     ENST00000586385 ENSP00000465818                173                core
+#> 4     ENST00000591534 ENSP00000467329                354                core
+#> 5     ENST00000591849 ENSP00000465347                 96                core
+#> 6     ENST00000493795 ENSP00000418775               1816                core
+#> 7     ENST00000471181 ENSP00000418960               1884                core
+#> 8     ENST00000461221 ENSP00000418548                 63                core
+#> 9     ENST00000491747 ENSP00000420705                759                core
+#> 10    ENST00000484087 ENSP00000419481                498                core
+#> 11    ENST00000478531 ENSP00000420412                623                core
+#> 12    ENST00000493919 ENSP00000418819                572                core
+#> 13               <NA>            <NA>                 NA                <NA>
+#> 14    ENST00000487825 ENSP00000418212                266                core
+#> 15    ENST00000461574 ENSP00000417241                242                core
+#> 16               <NA>            <NA>                 NA                <NA>
+#> 17    ENST00000412061 ENSP00000397145                437                core
+#> 18    ENST00000470026 ENSP00000419274                649                core
+#> 19    ENST00000477152 ENSP00000419988                622                core
+#> 20    ENST00000492859 ENSP00000420253                 59                core
+#> 21    ENST00000497488 ENSP00000418986                177                core
+#> 22    ENST00000494123 ENSP00000419103                473                core
+#> 23    ENST00000473961 ENSP00000420201                319                core
+#> 24    ENST00000476777 ENSP00000417554                222                core
+#> 25    ENST00000461798 ENSP00000417988                 63                core
+#> 26    ENST00000489037 ENSP00000420781                 98                core
+#> 27    ENST00000354071 ENSP00000326002               1598                core
+#> 28    ENST00000352993 ENSP00000312236                721                core
+#> 29    ENST00000346315 ENSP00000246907               1624                core
+#> 30    ENST00000351666 ENSP00000338007                680                core
+#> 31    ENST00000309486 ENSP00000310938               1567                core
+#>    Translation.end Translation.start Translation.species Translation.version
+#> 1         41276113          41197695               human                   3
+#> 2         41276113          41197801               human                   1
+#> 3         41277202          41197695               human                   1
+#> 4         41226495          41197695               human                   1
+#> 5         41202109          41197695               human                   1
+#> 6         41258543          41197695               human                   1
+#> 7         41276113          41197695               human                   2
+#> 8         41276113          41256972               human                   1
+#> 9         41276113          41197695               human                   2
+#> 10        41256933          41215361               human                   1
+#> 11        41276113          41215361               human                   1
+#> 12        41258543          41215377               human                   1
+#> 13              NA                NA                <NA>                  NA
+#> 14        41256933          41228505               human                   1
+#> 15        41243841          41228554               human                   1
+#> 16              NA                NA                <NA>                  NA
+#> 17        41247883          41245587               human                   3
+#> 18        41276113          41245601               human                   1
+#> 19        41276113          41245603               human                   1
+#> 20        41276113          41262552               human                   1
+#> 21        41246659          41246129               human                   1
+#> 22        41276113          41246129               human                   1
+#> 23        41256908          41246187               human                   1
+#> 24        41276113          41247863               human                   1
+#> 25        41276113          41256972               human                   1
+#> 26        41276113          41256206               human                   1
+#> 27        41276113          41197695               human                   6
+#> 28        41276113          41197695               human                   5
+#> 29        41276113          41197695               human                   4
+#> 30        41276113          41197695               human                   3
+#> 31        41246659          41197695               human                   4
+#>                 id                logic_name gencode_primary         Exon
+#> 1  ENST00000357654 ensembl_havana_transcript               0 c("GRCh3....
+#> 2  ENST00000468300 ensembl_havana_transcript               0 c(412774....
+#> 3  ENST00000586385    havana_homo_sapiens_37               0 c(1, 1, ....
+#> 4  ENST00000591534    havana_homo_sapiens_37               0 c("core"....
+#> 5  ENST00000591849    havana_homo_sapiens_37               0 c(412773....
+#> 6  ENST00000493795 ensembl_havana_transcript               0 c("Exon"....
+#> 7  ENST00000471181 ensembl_havana_transcript               0 c(412772....
+#> 8  ENST00000461221    havana_homo_sapiens_37               0 c("core"....
+#> 9  ENST00000491747    havana_homo_sapiens_37               0 c(412772....
+#> 10 ENST00000484087    havana_homo_sapiens_37               0 c("Exon"....
+#> 11 ENST00000478531    havana_homo_sapiens_37               0 c(1, 1, ....
+#> 12 ENST00000493919    havana_homo_sapiens_37               0 c(412772....
+#> 13 ENST00000472490    havana_homo_sapiens_37               0 c("17", ....
+#> 14 ENST00000487825    havana_homo_sapiens_37               0 c("17", ....
+#> 15 ENST00000461574    havana_homo_sapiens_37               0 c("human....
+#> 16 ENST00000467274    havana_homo_sapiens_37               0 c("human....
+#> 17 ENST00000412061    havana_homo_sapiens_37               0 c(412478....
+#> 18 ENST00000470026    havana_homo_sapiens_37               0 c("human....
+#> 19 ENST00000477152    havana_homo_sapiens_37               0 c("ENSE0....
+#> 20 ENST00000492859    havana_homo_sapiens_37               0 c("Exon"....
+#> 21 ENST00000497488    havana_homo_sapiens_37               0 c("human....
+#> 22 ENST00000494123    havana_homo_sapiens_37               0 c("ENSE0....
+#> 23 ENST00000473961    havana_homo_sapiens_37               0 c("Exon"....
+#> 24 ENST00000476777    havana_homo_sapiens_37               0 c(412773....
+#> 25 ENST00000461798    havana_homo_sapiens_37               0 c("human....
+#> 26 ENST00000489037    havana_homo_sapiens_37               0 c(412771....
+#> 27 ENST00000354071   ensembl_homo_sapiens_37               0 c("ENSE0....
+#> 28 ENST00000352993   ensembl_homo_sapiens_37               0 c("Exon"....
+#> 29 ENST00000346315   ensembl_homo_sapiens_37               0 c(-1, -1....
+#> 30 ENST00000351666   ensembl_homo_sapiens_37               0 c(-1, -1....
+#> 31 ENST00000309486   ensembl_homo_sapiens_37               0 c(412774....
+#>         end db_type    start object_type                 biotype length
+#> 1  41277387    core 41196312  Transcript          protein_coding   7094
+#> 2  41277468    core 41196822  Transcript          protein_coding   3273
+#> 3  41277346    core 41197580  Transcript          protein_coding    781
+#> 4  41277346    core 41197580  Transcript          protein_coding   1282
+#> 5  41277346    core 41197580  Transcript          protein_coding    563
+#> 6  41277419    core 41197646  Transcript          protein_coding   5732
+#> 7  41277500    core 41197646  Transcript          protein_coding   5936
+#> 8  41277305    core 41197695  Transcript nonsense_mediated_decay   5693
+#> 9  41277373    core 41197695  Transcript          protein_coding   2379
+#> 10 41256933    core 41215361  Transcript          protein_coding   1495
+#> 11 41277376    core 41215361  Transcript          protein_coding   1972
+#> 12 41277419    core 41215377  Transcript          protein_coding   1948
+#> 13 41223083    core 41219291  Transcript         retained_intron    561
+#> 14 41256933    core 41228505  Transcript          protein_coding    800
+#> 15 41243841    core 41228554  Transcript          protein_coding    726
+#> 16 41277332    core 41243115  Transcript         retained_intron   4497
+#> 17 41247883    core 41245587  Transcript          non_stop_decay   1312
+#> 18 41277340    core 41245601  Transcript          protein_coding   2108
+#> 19 41277381    core 41245603  Transcript          protein_coding   1980
+#> 20 41277317    core 41246129  Transcript nonsense_mediated_decay   1584
+#> 21 41277317    core 41246129  Transcript          protein_coding    779
+#> 22 41277467    core 41246129  Transcript          protein_coding   1612
+#> 23 41256908    core 41246187  Transcript          protein_coding    958
+#> 24 41277370    core 41247863  Transcript          protein_coding    769
+#> 25 41277387    core 41251848  Transcript nonsense_mediated_decay    582
+#> 26 41277338    core 41256206  Transcript          protein_coding    455
+#> 27 41277500    core 41196313  Transcript          protein_coding   6411
+#> 28 41277500    core 41196313  Transcript          protein_coding   3780
+#> 29 41277468    core 41196313  Transcript          protein_coding   6451
+#> 30 41276132    core 41196313  Transcript          protein_coding   3444
+#> 31 41277468    core 41196313  Transcript          protein_coding   7114
+#> 
+#> $db_type
+#> [1] "core"
+#> 
+#> $biotype
+#> [1] "protein_coding"
+#> 
+#> $object_type
+#> [1] "Gene"
+#> 
+#> $description
+#> [1] "breast cancer 1, early onset [Source:HGNC Symbol;Acc:1100]"
+#> 
+#> $logic_name
+#> [1] "ensembl_havana_gene_homo_sapiens_37"
 #> 
 ```

@@ -41,7 +41,7 @@ Parsed response
 psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> $search
 #> $search$count
-#> [1] "22874"
+#> [1] "22909"
 #> 
 #> $search$retmax
 #> [1] "3"
@@ -50,7 +50,7 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> [1] "0"
 #> 
 #> $search$idlist
-#> [1] "25329591" "29687286" "15546503"
+#> [1] "29687286" "38421676" "33406487"
 #> 
 #> $search$translationset
 #>                       from
@@ -64,149 +64,6 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> 
 #> $search$querytranslation
 #> [1] "(\"brca1 protein human\"[Supplementary Concept] OR \"brca1 protein human\"[All Fields] OR \"brca1\"[All Fields] OR \"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1 s\"[All Fields]) AND (\"cancer s\"[All Fields] OR \"cancerated\"[All Fields] OR \"canceration\"[All Fields] OR \"cancerization\"[All Fields] OR \"cancerized\"[All Fields] OR \"cancerous\"[All Fields] OR \"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields] OR \"cancers\"[All Fields] OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"
-#> 
-#> 
-#> $`25329591`
-#> $`25329591`$uid
-#> [1] "25329591"
-#> 
-#> $`25329591`$pubdate
-#> [1] "2015"
-#> 
-#> $`25329591`$epubdate
-#> [1] ""
-#> 
-#> $`25329591`$source
-#> [1] "Anticancer Agents Med Chem"
-#> 
-#> $`25329591`$authors
-#>           name authtype clusterid
-#> 1 Romagnolo AP   Author          
-#> 2 Romagnolo DF   Author          
-#> 3    Selmin OI   Author          
-#> 
-#> $`25329591`$lastauthor
-#> [1] "Selmin OI"
-#> 
-#> $`25329591`$title
-#> [1] "BRCA1 as target for breast cancer prevention and therapy."
-#> 
-#> $`25329591`$sorttitle
-#> [1] "brca1 as target for breast cancer prevention and therapy"
-#> 
-#> $`25329591`$volume
-#> [1] "15"
-#> 
-#> $`25329591`$issue
-#> [1] "1"
-#> 
-#> $`25329591`$pages
-#> [1] "4-14"
-#> 
-#> $`25329591`$lang
-#> [1] "eng"
-#> 
-#> $`25329591`$nlmuniqueid
-#> [1] "101265649"
-#> 
-#> $`25329591`$issn
-#> [1] "1871-5206"
-#> 
-#> $`25329591`$essn
-#> [1] "1875-5992"
-#> 
-#> $`25329591`$pubtype
-#> [1] "Journal Article" "Review"         
-#> 
-#> $`25329591`$recordstatus
-#> [1] "PubMed - indexed for MEDLINE"
-#> 
-#> $`25329591`$pubstatus
-#> [1] "4"
-#> 
-#> $`25329591`$articleids
-#>   idtype idtypen                             value
-#> 1 pubmed       1                          25329591
-#> 2    doi       3 10.2174/1871520614666141020153543
-#> 3    pii       4                  ACAMC-EPUB-62932
-#> 
-#> $`25329591`$history
-#>   pubstatus             date
-#> 1  received 2014/09/05 00:00
-#> 2   revised 2014/10/14 00:00
-#> 3  accepted 2014/10/15 00:00
-#> 4    entrez 2014/10/21 06:00
-#> 5    pubmed 2014/10/21 06:00
-#> 6   medline 2015/08/13 06:00
-#> 
-#> $`25329591`$references
-#> list()
-#> 
-#> $`25329591`$attributes
-#> [1] "Has Abstract"
-#> 
-#> $`25329591`$pmcrefcount
-#> [1] ""
-#> 
-#> $`25329591`$fulljournalname
-#> [1] "Anti-cancer agents in medicinal chemistry"
-#> 
-#> $`25329591`$elocationid
-#> [1] ""
-#> 
-#> $`25329591`$doctype
-#> [1] "citation"
-#> 
-#> $`25329591`$srccontriblist
-#> list()
-#> 
-#> $`25329591`$booktitle
-#> [1] ""
-#> 
-#> $`25329591`$medium
-#> [1] ""
-#> 
-#> $`25329591`$edition
-#> [1] ""
-#> 
-#> $`25329591`$publisherlocation
-#> [1] ""
-#> 
-#> $`25329591`$publishername
-#> [1] ""
-#> 
-#> $`25329591`$srcdate
-#> [1] ""
-#> 
-#> $`25329591`$reportnumber
-#> [1] ""
-#> 
-#> $`25329591`$availablefromurl
-#> [1] ""
-#> 
-#> $`25329591`$locationlabel
-#> [1] ""
-#> 
-#> $`25329591`$doccontriblist
-#> list()
-#> 
-#> $`25329591`$docdate
-#> [1] ""
-#> 
-#> $`25329591`$bookname
-#> [1] ""
-#> 
-#> $`25329591`$chapter
-#> [1] ""
-#> 
-#> $`25329591`$sortpubdate
-#> [1] "2015/01/01 00:00"
-#> 
-#> $`25329591`$sortfirstauthor
-#> [1] "Romagnolo AP"
-#> 
-#> $`25329591`$vernaculartitle
-#> [1] ""
 #> 
 #> 
 #> $`29687286`
@@ -354,144 +211,356 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> [1] ""
 #> 
 #> 
-#> $`15546503`
-#> $`15546503`$uid
-#> [1] "15546503"
+#> $`38421676`
+#> $`38421676`$uid
+#> [1] "38421676"
 #> 
-#> $`15546503`$pubdate
-#> [1] "2004 Nov"
+#> $`38421676`$pubdate
+#> [1] "2024 Apr 1"
 #> 
-#> $`15546503`$epubdate
+#> $`38421676`$epubdate
 #> [1] ""
 #> 
-#> $`15546503`$source
-#> [1] "Cancer Sci"
+#> $`38421676`$source
+#> [1] "JAMA Oncol"
 #> 
-#> $`15546503`$authors
-#>        name authtype clusterid
-#> 1 Yoshida K   Author          
-#> 2    Miki Y   Author          
+#> $`38421676`$authors
+#>                                             name       authtype clusterid
+#> 1                                     Lubinski J         Author          
+#> 2                                  Kotsopoulos J         Author          
+#> 3                                       Moller P         Author          
+#> 4                                          Pal T         Author          
+#> 5                                        Eisen A         Author          
+#> 6                                         Peck L         Author          
+#> 7                                      Karlan BY         Author          
+#> 8                                       Aeilts A         Author          
+#> 9                                          Eng C         Author          
+#> 10                                   Bordeleau L         Author          
+#> 11                                    Foulkes WD         Author          
+#> 12                                        Tung N         Author          
+#> 13                                      Couch FJ         Author          
+#> 14                                     Fruscio R         Author          
+#> 15                               Ramon Y Cajal T         Author          
+#> 16                                     Singer CF         Author          
+#> 17                                  Neuhausen SL         Author          
+#> 18                                     Zakalik D         Author          
+#> 19                                    Cybulski C         Author          
+#> 20                                    Gronwald J         Author          
+#> 21                                    Huzarski T         Author          
+#> 22                                      Stempa K         Author          
+#> 23                                      Dungan J         Author          
+#> 24                                   Cullinane C         Author          
+#> 25                                    Olopade OI         Author          
+#> 26                                    Metcalfe K         Author          
+#> 27                                         Sun P         Author          
+#> 28                                      Narod SA         Author          
+#> 29 Hereditary Breast Cancer Clinical Study Group CollectiveName          
 #> 
-#> $`15546503`$lastauthor
-#> [1] "Miki Y"
+#> $`38421676`$lastauthor
+#> [1] "Narod SA"
 #> 
-#> $`15546503`$title
-#> [1] "Role of BRCA1 and BRCA2 as regulators of DNA repair, transcription, and cell cycle in response to DNA damage."
+#> $`38421676`$title
+#> [1] "MRI Surveillance and Breast Cancer Mortality in Women With BRCA1 and BRCA2 Sequence Variations."
 #> 
-#> $`15546503`$sorttitle
-#> [1] "role of brca1 and brca2 as regulators of dna repair transcription and cell cycle in response to dna damage"
+#> $`38421676`$sorttitle
+#> [1] "mri surveillance and breast cancer mortality in women with brca1 and brca2 sequence variations"
 #> 
-#> $`15546503`$volume
-#> [1] "95"
+#> $`38421676`$volume
+#> [1] "10"
 #> 
-#> $`15546503`$issue
-#> [1] "11"
-#> 
-#> $`15546503`$pages
-#> [1] "866-71"
-#> 
-#> $`15546503`$lang
-#> [1] "eng"
-#> 
-#> $`15546503`$nlmuniqueid
-#> [1] "101168776"
-#> 
-#> $`15546503`$issn
-#> [1] "1347-9032"
-#> 
-#> $`15546503`$essn
-#> [1] "1349-7006"
-#> 
-#> $`15546503`$pubtype
-#> [1] "Journal Article" "Review"         
-#> 
-#> $`15546503`$recordstatus
-#> [1] "PubMed - indexed for MEDLINE"
-#> 
-#> $`15546503`$pubstatus
+#> $`38421676`$issue
 #> [1] "4"
 #> 
-#> $`15546503`$articleids
-#>   idtype idtypen                              value
-#> 1 pubmed       1                           15546503
-#> 2    pmc       8                        PMC11159131
-#> 3  pmcid       5               pmc-id: PMC11159131;
-#> 4    doi       3 10.1111/j.1349-7006.2004.tb02195.x
+#> $`38421676`$pages
+#> [1] "493-499"
 #> 
-#> $`15546503`$history
+#> $`38421676`$lang
+#> [1] "eng"
+#> 
+#> $`38421676`$nlmuniqueid
+#> [1] "101652861"
+#> 
+#> $`38421676`$issn
+#> [1] "2374-2437"
+#> 
+#> $`38421676`$essn
+#> [1] "2374-2445"
+#> 
+#> $`38421676`$pubtype
+#> [1] "Journal Article"
+#> 
+#> $`38421676`$recordstatus
+#> [1] "PubMed - indexed for MEDLINE"
+#> 
+#> $`38421676`$pubstatus
+#> [1] "4"
+#> 
+#> $`38421676`$articleids
+#>   idtype idtypen                       value
+#> 1 pubmed       1                    38421676
+#> 2    pmc       8                 PMC10905376
+#> 3  pmcid       5        pmc-id: PMC10905376;
+#> 4    doi       3 10.1001/jamaoncol.2023.6944
+#> 5    pii       4                     2815702
+#> 
+#> $`38421676`$history
 #>     pubstatus             date
-#> 1      pubmed 2004/11/18 09:00
-#> 2     medline 2005/01/15 09:00
-#> 3      entrez 2004/11/18 09:00
-#> 4 pmc-release 2005/08/19 00:00
+#> 1     medline 2024/04/19 06:43
+#> 2      pubmed 2024/02/29 12:42
+#> 3      entrez 2024/02/29 11:34
+#> 4 pmc-release 2024/02/29 00:00
 #> 
-#> $`15546503`$references
-#> list()
+#> $`38421676`$references
+#>                                                                 refsource
+#> 1 JAMA Oncol. 2024 Apr 1;10(4):435-436. doi: 10.1001/jamaoncol.2023.5186.
+#>      reftype     pmid note
+#> 1 Comment in 38421667     
 #> 
-#> $`15546503`$attributes
+#> $`38421676`$attributes
 #> [1] "Has Abstract"
 #> 
-#> $`15546503`$pmcrefcount
-#> [1] 62
+#> $`38421676`$pmcrefcount
+#> [1] 13
 #> 
-#> $`15546503`$fulljournalname
-#> [1] "Cancer science"
+#> $`38421676`$fulljournalname
+#> [1] "JAMA oncology"
 #> 
-#> $`15546503`$elocationid
-#> [1] ""
+#> $`38421676`$elocationid
+#> [1] "doi: 10.1001/jamaoncol.2023.6944"
 #> 
-#> $`15546503`$doctype
+#> $`38421676`$doctype
 #> [1] "citation"
 #> 
-#> $`15546503`$srccontriblist
+#> $`38421676`$srccontriblist
 #> list()
 #> 
-#> $`15546503`$booktitle
+#> $`38421676`$booktitle
 #> [1] ""
 #> 
-#> $`15546503`$medium
+#> $`38421676`$medium
 #> [1] ""
 #> 
-#> $`15546503`$edition
+#> $`38421676`$edition
 #> [1] ""
 #> 
-#> $`15546503`$publisherlocation
+#> $`38421676`$publisherlocation
 #> [1] ""
 #> 
-#> $`15546503`$publishername
+#> $`38421676`$publishername
 #> [1] ""
 #> 
-#> $`15546503`$srcdate
+#> $`38421676`$srcdate
 #> [1] ""
 #> 
-#> $`15546503`$reportnumber
+#> $`38421676`$reportnumber
 #> [1] ""
 #> 
-#> $`15546503`$availablefromurl
+#> $`38421676`$availablefromurl
 #> [1] ""
 #> 
-#> $`15546503`$locationlabel
+#> $`38421676`$locationlabel
 #> [1] ""
 #> 
-#> $`15546503`$doccontriblist
+#> $`38421676`$doccontriblist
 #> list()
 #> 
-#> $`15546503`$docdate
+#> $`38421676`$docdate
 #> [1] ""
 #> 
-#> $`15546503`$bookname
+#> $`38421676`$bookname
 #> [1] ""
 #> 
-#> $`15546503`$chapter
+#> $`38421676`$chapter
 #> [1] ""
 #> 
-#> $`15546503`$sortpubdate
-#> [1] "2004/11/01 00:00"
+#> $`38421676`$sortpubdate
+#> [1] "2024/04/01 00:00"
 #> 
-#> $`15546503`$sortfirstauthor
-#> [1] "Yoshida K"
+#> $`38421676`$sortfirstauthor
+#> [1] "Lubinski J"
 #> 
-#> $`15546503`$vernaculartitle
+#> $`38421676`$vernaculartitle
+#> [1] ""
+#> 
+#> 
+#> $`33406487`
+#> $`33406487`$uid
+#> [1] "33406487"
+#> 
+#> $`33406487`$pubdate
+#> [1] "2021 Jan 6"
+#> 
+#> $`33406487`$epubdate
+#> [1] "2021 Jan 6"
+#> 
+#> $`33406487`$source
+#> [1] "J Natl Compr Canc Netw"
+#> 
+#> $`33406487`$authors
+#>                 name       authtype clusterid
+#> 1            Daly MB         Author          
+#> 2              Pal T         Author          
+#> 3           Berry MP         Author          
+#> 4            Buys SS         Author          
+#> 5          Dickson P         Author          
+#> 6         Domchek SM         Author          
+#> 7        Elkhanany A         Author          
+#> 8         Friedman S         Author          
+#> 9          Goggins M         Author          
+#> 10         Hutton ML         Author          
+#> 11               CGC CollectiveName          
+#> 12         Karlan BY         Author          
+#> 13            Khan S         Author          
+#> 14           Klein C         Author          
+#> 15        Kohlmann W         Author          
+#> 16               CGC CollectiveName          
+#> 17         Kurian AW         Author          
+#> 18         Laronga C         Author          
+#> 19         Litton JK         Author          
+#> 20            Mak JS         Author          
+#> 21              LCGC CollectiveName          
+#> 22       Menendez CS         Author          
+#> 23       Merajver SD         Author          
+#> 24       Norquist BS         Author          
+#> 25           Offit K         Author          
+#> 26       Pederson HJ         Author          
+#> 27          Reiser G         Author          
+#> 28               CGC CollectiveName          
+#> 29 Senter-Jamieson L         Author          
+#> 30               CGC CollectiveName          
+#> 31        Shannon KM         Author          
+#> 32         Shatsky R         Author          
+#> 33     Visvanathan K         Author          
+#> 34        Weitzel JN         Author          
+#> 35           Wick MJ         Author          
+#> 36       Wisinski KB         Author          
+#> 37       Yurgelun MB         Author          
+#> 38         Darlow SD         Author          
+#> 39          Dwyer MA         Author          
+#> 
+#> $`33406487`$lastauthor
+#> [1] "Dwyer MA"
+#> 
+#> $`33406487`$title
+#> [1] "Genetic/Familial High-Risk Assessment: Breast, Ovarian, and Pancreatic, Version 2.2021, NCCN Clinical Practice Guidelines in Oncology."
+#> 
+#> $`33406487`$sorttitle
+#> [1] "genetic familial high risk assessment breast ovarian and pancreatic version 2 2021 nccn clinical practice guidelines in oncology"
+#> 
+#> $`33406487`$volume
+#> [1] "19"
+#> 
+#> $`33406487`$issue
+#> [1] "1"
+#> 
+#> $`33406487`$pages
+#> [1] "77-102"
+#> 
+#> $`33406487`$lang
+#> [1] "eng"
+#> 
+#> $`33406487`$nlmuniqueid
+#> [1] "101162515"
+#> 
+#> $`33406487`$issn
+#> [1] "1540-1405"
+#> 
+#> $`33406487`$essn
+#> [1] "1540-1413"
+#> 
+#> $`33406487`$pubtype
+#> [1] "Journal Article"    "Practice Guideline"
+#> 
+#> $`33406487`$recordstatus
+#> [1] "PubMed - indexed for MEDLINE"
+#> 
+#> $`33406487`$pubstatus
+#> [1] "3"
+#> 
+#> $`33406487`$articleids
+#>   idtype idtypen                   value
+#> 1 pubmed       1                33406487
+#> 2    doi       3 10.6004/jnccn.2021.0001
+#> 3    pii       4            jnccnGLS1901
+#> 
+#> $`33406487`$history
+#>   pubstatus             date
+#> 1    entrez 2021/01/06 20:05
+#> 2    pubmed 2021/01/07 06:00
+#> 3   medline 2021/11/06 06:00
+#> 
+#> $`33406487`$references
+#>                                                                    refsource
+#> 1 J Natl Compr Canc Netw. 2022 Feb;20(2):xxvi. doi: 10.6004/jnccn.2022.0014.
+#> 2  J Natl Compr Canc Netw. 2022 Feb;20(2):xxv. doi: 10.6004/jnccn.2021.7103.
+#>      reftype     pmid note
+#> 1 Comment in 35130498     
+#> 2 Comment in 35130501     
+#> 
+#> $`33406487`$attributes
+#> [1] "Has Abstract"
+#> 
+#> $`33406487`$pmcrefcount
+#> [1] ""
+#> 
+#> $`33406487`$fulljournalname
+#> [1] "Journal of the National Comprehensive Cancer Network : JNCCN"
+#> 
+#> $`33406487`$elocationid
+#> [1] "doi: 10.6004/jnccn.2021.0001"
+#> 
+#> $`33406487`$doctype
+#> [1] "citation"
+#> 
+#> $`33406487`$srccontriblist
+#> list()
+#> 
+#> $`33406487`$booktitle
+#> [1] ""
+#> 
+#> $`33406487`$medium
+#> [1] ""
+#> 
+#> $`33406487`$edition
+#> [1] ""
+#> 
+#> $`33406487`$publisherlocation
+#> [1] ""
+#> 
+#> $`33406487`$publishername
+#> [1] ""
+#> 
+#> $`33406487`$srcdate
+#> [1] ""
+#> 
+#> $`33406487`$reportnumber
+#> [1] ""
+#> 
+#> $`33406487`$availablefromurl
+#> [1] ""
+#> 
+#> $`33406487`$locationlabel
+#> [1] ""
+#> 
+#> $`33406487`$doccontriblist
+#> list()
+#> 
+#> $`33406487`$docdate
+#> [1] ""
+#> 
+#> $`33406487`$bookname
+#> [1] ""
+#> 
+#> $`33406487`$chapter
+#> [1] ""
+#> 
+#> $`33406487`$sortpubdate
+#> [1] "2021/01/06 00:00"
+#> 
+#> $`33406487`$sortfirstauthor
+#> [1] "Daly MB"
+#> 
+#> $`33406487`$vernaculartitle
 #> [1] ""
 #> 
 #> 

@@ -84,7 +84,7 @@ cohort <- getTCGAcohorts()[1]
 psichomics:::queryFirebrowseData(cohort = names(cohort),
                                  data_type = "mRNASeq")
 #> Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&date=2016_01_28&cohort=ACC&data_type=mRNASeq]
-#>   Date: 2025-11-10 07:25
+#>   Date: 2025-11-17 07:27
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 12.1 kB
@@ -106,7 +106,7 @@ dates <- format(dates, psichomics:::getFirebrowseDateFormat()$query)
 
 psichomics:::queryFirebrowseData(date = dates[2], cohort = names(cohort))
 #> Response [http://firebrowse.org/api/v1/Archives/StandardData?format=json&date=2015_11_01&cohort=ACC]
-#>   Date: 2025-11-10 07:25
+#>   Date: 2025-11-17 07:27
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 37.2 kB
