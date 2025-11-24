@@ -41,7 +41,7 @@ Parsed response
 psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> $search
 #> $search$count
-#> [1] "22909"
+#> [1] "22928"
 #> 
 #> $search$retmax
 #> [1] "3"
@@ -50,7 +50,7 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> [1] "0"
 #> 
 #> $search$idlist
-#> [1] "29687286" "38421676" "33406487"
+#> [1] "29687286" "38421676" "29470806"
 #> 
 #> $search$translationset
 #>                       from
@@ -63,7 +63,7 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> 3                                                                                                                               "adrenocortical carcinoma"[MeSH Terms] OR ("adrenocortical"[All Fields] AND "carcinoma"[All Fields]) OR "adrenocortical carcinoma"[All Fields]
 #> 
 #> $search$querytranslation
-#> [1] "(\"brca1 protein human\"[Supplementary Concept] OR \"brca1 protein human\"[All Fields] OR \"brca1\"[All Fields] OR \"genes, brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1 s\"[All Fields]) AND (\"cancer s\"[All Fields] OR \"cancerated\"[All Fields] OR \"canceration\"[All Fields] OR \"cancerization\"[All Fields] OR \"cancerized\"[All Fields] OR \"cancerous\"[All Fields] OR \"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields] OR \"cancers\"[All Fields] OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"
+#> [1] "(\"brca1 protein human\"[Supplementary Concept] OR \"brca1 protein human\"[All Fields] OR \"brca1\"[All Fields] OR \"genes brca1\"[MeSH Terms] OR (\"genes\"[All Fields] AND \"brca1\"[All Fields]) OR \"brca1 genes\"[All Fields] OR \"brca1 s\"[All Fields]) AND (\"cancer s\"[All Fields] OR \"cancerated\"[All Fields] OR \"canceration\"[All Fields] OR \"cancerization\"[All Fields] OR \"cancerized\"[All Fields] OR \"cancerous\"[All Fields] OR \"neoplasms\"[MeSH Terms] OR \"neoplasms\"[All Fields] OR \"cancer\"[All Fields] OR \"cancers\"[All Fields] OR (\"adrenocortical carcinoma\"[MeSH Terms] OR (\"adrenocortical\"[All Fields] AND \"carcinoma\"[All Fields]) OR \"adrenocortical carcinoma\"[All Fields]))"
 #> 
 #> 
 #> $`29687286`
@@ -383,184 +383,174 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> [1] ""
 #> 
 #> 
-#> $`33406487`
-#> $`33406487`$uid
-#> [1] "33406487"
+#> $`29470806`
+#> $`29470806`$uid
+#> [1] "29470806"
 #> 
-#> $`33406487`$pubdate
-#> [1] "2021 Jan 6"
+#> $`29470806`$pubdate
+#> [1] "2018 Jul"
 #> 
-#> $`33406487`$epubdate
-#> [1] "2021 Jan 6"
+#> $`29470806`$epubdate
+#> [1] "2018 Feb 22"
 #> 
-#> $`33406487`$source
-#> [1] "J Natl Compr Canc Netw"
+#> $`29470806`$source
+#> [1] "Breast Cancer Res Treat"
 #> 
-#> $`33406487`$authors
-#>                 name       authtype clusterid
-#> 1            Daly MB         Author          
-#> 2              Pal T         Author          
-#> 3           Berry MP         Author          
-#> 4            Buys SS         Author          
-#> 5          Dickson P         Author          
-#> 6         Domchek SM         Author          
-#> 7        Elkhanany A         Author          
-#> 8         Friedman S         Author          
-#> 9          Goggins M         Author          
-#> 10         Hutton ML         Author          
-#> 11               CGC CollectiveName          
-#> 12         Karlan BY         Author          
-#> 13            Khan S         Author          
-#> 14           Klein C         Author          
-#> 15        Kohlmann W         Author          
-#> 16               CGC CollectiveName          
-#> 17         Kurian AW         Author          
-#> 18         Laronga C         Author          
-#> 19         Litton JK         Author          
-#> 20            Mak JS         Author          
-#> 21              LCGC CollectiveName          
-#> 22       Menendez CS         Author          
-#> 23       Merajver SD         Author          
-#> 24       Norquist BS         Author          
-#> 25           Offit K         Author          
-#> 26       Pederson HJ         Author          
-#> 27          Reiser G         Author          
-#> 28               CGC CollectiveName          
-#> 29 Senter-Jamieson L         Author          
-#> 30               CGC CollectiveName          
-#> 31        Shannon KM         Author          
-#> 32         Shatsky R         Author          
-#> 33     Visvanathan K         Author          
-#> 34        Weitzel JN         Author          
-#> 35           Wick MJ         Author          
-#> 36       Wisinski KB         Author          
-#> 37       Yurgelun MB         Author          
-#> 38         Darlow SD         Author          
-#> 39          Dwyer MA         Author          
+#> $`29470806`$authors
+#>                name authtype clusterid
+#> 1           Singh J   Author          
+#> 2           Thota N   Author          
+#> 3           Singh S   Author          
+#> 4           Padhi S   Author          
+#> 5           Mohan P   Author          
+#> 6         Deshwal S   Author          
+#> 7             Sur S   Author          
+#> 8           Ghosh M   Author          
+#> 9         Agarwal A   Author          
+#> 10          Sarin R   Author          
+#> 11          Ahmed R   Author          
+#> 12          Almel S   Author          
+#> 13    Chakraborti B   Author          
+#> 14          Raina V   Author          
+#> 15     DadiReddy PK   Author          
+#> 16        Smruti BK   Author          
+#> 17        Rajappa S   Author          
+#> 18     Dodagoudar C   Author          
+#> 19       Aggarwal S   Author          
+#> 20        Singhal M   Author          
+#> 21          Joshi A   Author          
+#> 22          Kumar R   Author          
+#> 23          Kumar A   Author          
+#> 24        Mishra DK   Author          
+#> 25          Arora N   Author          
+#> 26         Karaba A   Author          
+#> 27       Sankaran S   Author          
+#> 28     Katragadda S   Author          
+#> 29          Ghosh A   Author          
+#> 30 Veeramachaneni V   Author          
+#> 31      Hariharan R   Author          
+#> 32        Mannan AU   Author          
 #> 
-#> $`33406487`$lastauthor
-#> [1] "Dwyer MA"
+#> $`29470806`$lastauthor
+#> [1] "Mannan AU"
 #> 
-#> $`33406487`$title
-#> [1] "Genetic/Familial High-Risk Assessment: Breast, Ovarian, and Pancreatic, Version 2.2021, NCCN Clinical Practice Guidelines in Oncology."
+#> $`29470806`$title
+#> [1] "Screening of over 1000 Indian patients with breast and/or ovarian cancer with a multi-gene panel: prevalence of BRCA1/2 and non-BRCA mutations."
 #> 
-#> $`33406487`$sorttitle
-#> [1] "genetic familial high risk assessment breast ovarian and pancreatic version 2 2021 nccn clinical practice guidelines in oncology"
+#> $`29470806`$sorttitle
+#> [1] "screening of over 1000 indian patients with breast and or ovarian cancer with a multi gene panel prevalence of brca1 2 and non brca mutations"
 #> 
-#> $`33406487`$volume
-#> [1] "19"
+#> $`29470806`$volume
+#> [1] "170"
 #> 
-#> $`33406487`$issue
+#> $`29470806`$issue
 #> [1] "1"
 #> 
-#> $`33406487`$pages
-#> [1] "77-102"
+#> $`29470806`$pages
+#> [1] "189-196"
 #> 
-#> $`33406487`$lang
+#> $`29470806`$lang
 #> [1] "eng"
 #> 
-#> $`33406487`$nlmuniqueid
-#> [1] "101162515"
+#> $`29470806`$nlmuniqueid
+#> [1] "8111104"
 #> 
-#> $`33406487`$issn
-#> [1] "1540-1405"
+#> $`29470806`$issn
+#> [1] "0167-6806"
 #> 
-#> $`33406487`$essn
-#> [1] "1540-1413"
+#> $`29470806`$essn
+#> [1] "1573-7217"
 #> 
-#> $`33406487`$pubtype
-#> [1] "Journal Article"    "Practice Guideline"
+#> $`29470806`$pubtype
+#> [1] "Journal Article"
 #> 
-#> $`33406487`$recordstatus
+#> $`29470806`$recordstatus
 #> [1] "PubMed - indexed for MEDLINE"
 #> 
-#> $`33406487`$pubstatus
-#> [1] "3"
+#> $`29470806`$pubstatus
+#> [1] "256"
 #> 
-#> $`33406487`$articleids
-#>   idtype idtypen                   value
-#> 1 pubmed       1                33406487
-#> 2    doi       3 10.6004/jnccn.2021.0001
-#> 3    pii       4            jnccnGLS1901
+#> $`29470806`$articleids
+#>   idtype idtypen                     value
+#> 1 pubmed       1                  29470806
+#> 2    doi       3 10.1007/s10549-018-4726-x
+#> 3    pii       4 10.1007/s10549-018-4726-x
 #> 
-#> $`33406487`$history
+#> $`29470806`$history
 #>   pubstatus             date
-#> 1    entrez 2021/01/06 20:05
-#> 2    pubmed 2021/01/07 06:00
-#> 3   medline 2021/11/06 06:00
+#> 1  received 2017/11/16 00:00
+#> 2  accepted 2018/02/19 00:00
+#> 3    pubmed 2018/02/23 06:00
+#> 4   medline 2019/03/05 06:00
+#> 5    entrez 2018/02/23 06:00
 #> 
-#> $`33406487`$references
-#>                                                                    refsource
-#> 1 J Natl Compr Canc Netw. 2022 Feb;20(2):xxvi. doi: 10.6004/jnccn.2022.0014.
-#> 2  J Natl Compr Canc Netw. 2022 Feb;20(2):xxv. doi: 10.6004/jnccn.2021.7103.
-#>      reftype     pmid note
-#> 1 Comment in 35130498     
-#> 2 Comment in 35130501     
+#> $`29470806`$references
+#> list()
 #> 
-#> $`33406487`$attributes
+#> $`29470806`$attributes
 #> [1] "Has Abstract"
 #> 
-#> $`33406487`$pmcrefcount
+#> $`29470806`$pmcrefcount
 #> [1] ""
 #> 
-#> $`33406487`$fulljournalname
-#> [1] "Journal of the National Comprehensive Cancer Network : JNCCN"
+#> $`29470806`$fulljournalname
+#> [1] "Breast cancer research and treatment"
 #> 
-#> $`33406487`$elocationid
-#> [1] "doi: 10.6004/jnccn.2021.0001"
+#> $`29470806`$elocationid
+#> [1] "doi: 10.1007/s10549-018-4726-x"
 #> 
-#> $`33406487`$doctype
+#> $`29470806`$doctype
 #> [1] "citation"
 #> 
-#> $`33406487`$srccontriblist
+#> $`29470806`$srccontriblist
 #> list()
 #> 
-#> $`33406487`$booktitle
+#> $`29470806`$booktitle
 #> [1] ""
 #> 
-#> $`33406487`$medium
+#> $`29470806`$medium
 #> [1] ""
 #> 
-#> $`33406487`$edition
+#> $`29470806`$edition
 #> [1] ""
 #> 
-#> $`33406487`$publisherlocation
+#> $`29470806`$publisherlocation
 #> [1] ""
 #> 
-#> $`33406487`$publishername
+#> $`29470806`$publishername
 #> [1] ""
 #> 
-#> $`33406487`$srcdate
+#> $`29470806`$srcdate
 #> [1] ""
 #> 
-#> $`33406487`$reportnumber
+#> $`29470806`$reportnumber
 #> [1] ""
 #> 
-#> $`33406487`$availablefromurl
+#> $`29470806`$availablefromurl
 #> [1] ""
 #> 
-#> $`33406487`$locationlabel
+#> $`29470806`$locationlabel
 #> [1] ""
 #> 
-#> $`33406487`$doccontriblist
+#> $`29470806`$doccontriblist
 #> list()
 #> 
-#> $`33406487`$docdate
+#> $`29470806`$docdate
 #> [1] ""
 #> 
-#> $`33406487`$bookname
+#> $`29470806`$bookname
 #> [1] ""
 #> 
-#> $`33406487`$chapter
+#> $`29470806`$chapter
 #> [1] ""
 #> 
-#> $`33406487`$sortpubdate
-#> [1] "2021/01/06 00:00"
+#> $`29470806`$sortpubdate
+#> [1] "2018/07/01 00:00"
 #> 
-#> $`33406487`$sortfirstauthor
-#> [1] "Daly MB"
+#> $`29470806`$sortfirstauthor
+#> [1] "Singh J"
 #> 
-#> $`33406487`$vernaculartitle
+#> $`29470806`$vernaculartitle
 #> [1] ""
 #> 
 #> 

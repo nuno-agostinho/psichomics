@@ -109,11 +109,11 @@ diffAnalyses(psi, group)
 #> 
 #> Time difference of 0.0216 secs
 #> 
-#> Time difference of 0.00584 secs
+#> Time difference of 0.0059 secs
 #> 
-#> Time difference of 0.000305 secs
+#> Time difference of 0.000291 secs
 #> 
-#> Time difference of 0.000952 secs
+#> Time difference of 0.000964 secs
 #>                                                    Event type Chromosome Strand
 #> SE_1_+_32_35_37_38_ACTN1                    Skipped exon (SE)          1      +
 #> MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon (MXE)          1      +
