@@ -520,6 +520,7 @@ dataUI <- function(id, tab) {
             sprintf("psichomics %s, 2015-2026", packageVersion("psichomics"))))
 
     tab(title="Data", icon="table",
+        onCollapseOpen(ns("accordion")),
         sidebarLayout(
             sidebar( do.call(bsCollapse, c(id=ns("accordion"), uiList)) ),
             mainPanel( welcome, uiOutput(ns("tablesOrAbout")) ) ))

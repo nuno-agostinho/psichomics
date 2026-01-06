@@ -170,7 +170,6 @@ performSimpleDiffExpr <- function(geneExpr, groups, pvalueAdjust="BH",
 
     # Calculate moderated t-statistics and DE log-odds
     useLimmaTrend <- !is(geneExpr, "EList")
-    if (useLimmaTrend) fit <- as.matrix(fit)
     stats <- eBayes(fit, proportion=ebayesProportion,
                     trend=useLimmaTrend,
                     stdev.coef.lim=c(ebayesStdevMin, ebayesStdevMax))

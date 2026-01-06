@@ -19,7 +19,7 @@ getGtexDataTypes <- function() {
 #' @examples
 #' getGtexReleases()
 getGtexReleases <- function() {
-    release <- c(8, 7, 6, 4)
+    release <- c(10, 8, 7, 6, 4)
     n <- max(release) + 1
     getReleaseIfNotNull <- function(n) if (!is.null(getGtexDataURL(n))) n
     release <- c(release, getReleaseIfNotNull(n), getReleaseIfNotNull(n + 1))
@@ -40,13 +40,14 @@ gtexDataUI <- function(id, panel) {
                    a(href="http://www.gtexportal.org", target="_blank",
                      "GTEx Data Portal")),
           selectizeInput(ns("release"), "Version release", width="100%",
-                         getGtexReleases(), selected=8),
+                         getGtexReleases(), selected=10),
           selectizeInput(ns("dataTypes"), "Data type", multiple=TRUE,
                          width="100%", getGtexDataTypes(),
                          selected=getGtexDataTypes(), options=list(
                              placeholder="Select data types",
                              plugins=list("remove_button"))),
           browseDownloadFolderInput(ns("folder")),
+          onCollapseOpen(ns("filterCollapse")),
           bsCollapse(
               id=ns("filterCollapse"),
               bsCollapsePanel(
@@ -184,7 +185,15 @@ getGtexDataURL <- function(release, domain="https://storage.googleapis.com",
                            offline=FALSE) {
     path <- "adult-gtex"
     date <- NULL
-    if (release == 8) {
+
+    if (release == 10) {
+        res <- c(
+            "annotations/v10/metadata-files/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt",
+            "annotations/v10/metadata-files/GTEx_Analysis_v10_Annotations_SubjectPhenotypesDS.txt",
+            "bulk-gex/v10/rna-seq/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_reads.gct.gz",
+            "bulk-gex/v10/rna-seq/GTEx_Analysis_v10_STARv2.7.10a_junctions.gct.gz")
+        date <- as.Date("")
+    } else if (release == 8) {
         res <- c(
             "annotations/v8/metadata-files/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt",
             "annotations/v8/metadata-files/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt",
@@ -273,7 +282,7 @@ loadGtexData <- function(folder=getDownloadsFolder(), data=getGtexDataTypes(),
     if (is.null(link)) stop("No data available for GTEx V", release)
 
     folder <- file.path(folder, paste0("GTEx_V", release))
-    if (!dir.exists(folder)) dir.create(folder)
+    if (!dir.exists(folder)) dir.create(folder, recursive=TRUE)
     filepath <- downloadGtexFiles(link, folder)
 
     if (progress) updateProgress("Loading files...", divisions=length(data))
