@@ -15,7 +15,7 @@ samples of each data series, as well as sample names if available."><!-- Global 
 
     <a class="navbar-brand me-2" href="../index.html">psichomics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ samples of each data series, as well as sample names if available."><!-- Global 
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Plot sample distribution</h1>
-      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/devel/R/analysis.R" class="external-link"><code>R/analysis.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/1.36.1/R/analysis.R" class="external-link"><code>R/analysis.R</code></a></small>
       <div class="d-none name"><code>plotDistribution.Rd</code></div>
     </div>
 
@@ -102,13 +102,13 @@ for each group)?</p></dd>
 <dd><p>Arguments passed on to <code><a href="https://rdrr.io/r/stats/density.html" class="external-link">stats::density.default</a></code></p><dl><dt><code>bw</code></dt>
 <dd><p>the smoothing bandwidth to be used.  The kernels are scaled
     such that this is the standard deviation of the smoothing kernel.
-    (Note this differs from the reference books cited below, and from S-PLUS.)</p>
+    (Note this differs from the reference books cited below.)</p>
 <p><code>bw</code> can also be a character string giving a rule to choose the
     bandwidth.  See <code><a href="https://rdrr.io/r/stats/bandwidth.html" class="external-link">bw.nrd</a></code>. <br> The default,
     <code>"nrd0"</code>, has remained the default for historical and
     compatibility reasons, rather than as a general recommendation,
-    where e.g., <code>"SJ"</code> would rather fit, see also Venables and
-    Ripley (2002).</p>
+    where e.g., <code>"SJ"</code> would rather fit, see also
+    Venables and Ripley (2002).</p>
 <p>The specified (or computed) value of <code>bw</code> is multiplied by
     <code>adjust</code>.</p></dd>
 
@@ -183,6 +183,18 @@ for each group)?</p></dd>
 <dd><p>by default, the values of <code>from</code> and <code>to</code> are
     <code>cut</code> bandwidths beyond the extremes of the data.  This allows
     the estimated density to drop to approximately zero at the extremes.</p></dd>
+
+    <dt><code>ext</code></dt>
+<dd><p>a positive extension factor, <code>4</code> by default.  The values
+    <code>from</code> and <code>to</code> are further extended on both sides to
+    <code>lo &lt;- from - ext * bw</code> and <code>up &lt;- to + ext * bw</code> which are
+    then used to build the grid used for the FFT and interpolation, see
+    <code>n</code> above.
+    Do not change unless you know what you are doing!</p></dd>
+
+    <dt><code>old.coords</code></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></code> to require pre-R 4.4.0 behaviour
+    which gives too large values by a factor of about \((1 + 1/(2n-2))\).</p></dd>
 
 
 </dl></dd>

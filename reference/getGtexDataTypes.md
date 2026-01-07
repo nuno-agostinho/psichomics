@@ -30,5 +30,5 @@ getGtexDataTypes()
 #> Junction quantification 
 #>         "junctionQuant" 
 getGtexReleases()
-#> [1] 8 7 6 4
+#> [1] 10  8  7  6  4
 ```

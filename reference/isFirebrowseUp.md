@@ -20,7 +20,7 @@ Other functions associated with TCGA data retrieval:
 [`getDownloadsFolder()`](https://nuno-agostinho.github.io/psichomics/reference/getDownloadsFolder.md),
 [`getTCGAdataTypes()`](https://nuno-agostinho.github.io/psichomics/reference/getTCGAdataTypes.md),
 [`loadTCGAdata()`](https://nuno-agostinho.github.io/psichomics/reference/loadTCGAdata.md),
-[`parseTCGAsampleTypes()`](https://nuno-agostinho.github.io/psichomics/reference/parseTcgaSampleInfo.md)
+[`parseTCGAsampleTypes()`](https://nuno-agostinho.github.io/psichomics/reference/parseTCGAsampleInfo.md)
 
 ## Examples
 

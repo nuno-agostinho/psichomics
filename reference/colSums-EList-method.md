@@ -25,9 +25,9 @@ colSums(x, na.rm = FALSE, dims = 1)
 
 - dims:
 
-  integer: Which dimensions are regarded as ‘rows’ or ‘columns’ to sum
-  over. For `row*`, the sum or mean is over dimensions `dims+1, ...`;
-  for `col*` it is over dimensions `1:dims`.
+  integer number: Which dimensions are regarded as ‘rows’ or ‘columns’
+  to sum over. For `row*`, the sum or mean is over dimensions
+  `dims+1, ...`; for `col*` it is over dimensions `1:dims`.
 
 ## Value
 

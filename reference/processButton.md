@@ -33,6 +33,12 @@ processButton(id, label, ..., class = "btn-primary")
   :   The width of the input, e.g. `'400px'`, or `'100%'`; see
       [`validateCssUnit()`](https://rstudio.github.io/htmltools/reference/validateCssUnit.html).
 
+  `disabled`
+
+  :   If `TRUE`, the button will not be clickable. Use
+      [`updateActionButton()`](https://rdrr.io/pkg/shiny/man/updateActionButton.html)
+      to dynamically enable/disable the button.
+
 - class:
 
   Character: class

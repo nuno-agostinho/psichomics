@@ -15,7 +15,7 @@ the \(G^\rho\) family of tests, or for a single curve against a known alternativ
 
     <a class="navbar-brand me-2" href="../index.html">psichomics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ the \(G^\rho\) family of tests, or for a single curve against a known alternativ
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Test Survival Curve Differences</h1>
-      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/devel/R/analysis.R" class="external-link"><code>R/analysis.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/1.36.1/R/analysis.R" class="external-link"><code>R/analysis.R</code></a></small>
       <div class="d-none name"><code>survdiffTerms.Rd</code></div>
     </div>
 
@@ -117,6 +117,9 @@ then a one sample test is done.
 To cause missing values in the predictors to be treated as a separate
 group, rather than being omitted, use the <code>factor</code> function with its
 <code>exclude</code> argument to recode the righ-hand-side covariate.</p>
+<p>Note that the ordinary log-rank test is equivalent to the score test
+from a Cox model, using the Breslow approximation for ties.
+Use the Cox model form for more complex models, e.g., time-dependent covariates.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

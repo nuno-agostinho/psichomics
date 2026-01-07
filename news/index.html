@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">psichomics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,11 +42,29 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/nuno-agostinho/psichomics/blob/1.36.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.28.1" id="psichomics-1281-4-feb-2024">psichomics 1.28.1 (4 Feb, 2024)<a class="anchor" aria-label="anchor" href="#psichomics-1281-4-feb-2024"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.36.1" id="psichomics-1361-7-january-2026">psichomics 1.36.1 (7 January, 2026)<a class="anchor" aria-label="anchor" href="#psichomics-1361-7-january-2026"></a></h2>
+<ul><li>GTEx data loading (<code><a href="../reference/loadGtexData.html">loadGtexData()</a></code>):
+<ul><li>Support for loading GTEx V10 data</li>
+</ul></li>
+<li>Documentation:
+<ul><li>Remove confusing instructions on launching psichomics from README</li>
+<li>Improve Docker instructions on README</li>
+<li>Update external function documentation</li>
+<li>Update license copyright years</li>
+<li>Update email contact</li>
+</ul></li>
+<li>Bug fixes:
+<ul><li>Fix interface not loading for collapse panels</li>
+<li>Fix eBayes error on graphical interface</li>
+<li>Fix unit tests when testing <code>shiny</code> buttons</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.28.1" id="psichomics-1281-4-february-2024">psichomics 1.28.1 (4 February, 2024)<a class="anchor" aria-label="anchor" href="#psichomics-1281-4-february-2024"></a></h2>
 <ul><li>Update GTEx data download based on new URL endpoints</li>
 <li>Documentation:
 <ul><li>Update function documentation based on bug fixes below</li>
@@ -59,10 +77,11 @@
 </li>
 <li>Fix unit test issues when testing low coverage using random PSI values</li>
 <li>Update pkgdown and R CMD check automation in GitHub Actions</li>
+<li>(Docker) Fix subfolder creation error when parent folder does not exist</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.24.0" id="psichomics-1240-26-oct-2022">psichomics 1.24.0 (26 Oct, 2022)<a class="anchor" aria-label="anchor" href="#psichomics-1240-26-oct-2022"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.24.0" id="psichomics-1240-26-october-2022">psichomics 1.24.0 (26 October, 2022)<a class="anchor" aria-label="anchor" href="#psichomics-1240-26-october-2022"></a></h2>
 <ul><li>Bug fix: psichomics app now opens as expected instead of crashing</li>
 </ul></div>
     <div class="section level2">
@@ -708,7 +727,7 @@
 <ul><li>Add step-wise instructions about loading of user-provided files</li>
 <li>Filter GTEx junction quantification based on tissues of interest (all tissues are loaded by default)</li>
 <li>Quantify splicing based on a list of genes (splicing events within all genes are quantified by default)</li>
-<li>Parse sample information from TCGA samples using <code><a href="../reference/parseTcgaSampleInfo.html">parseTcgaSampleInfo()</a></code>
+<li>Parse sample information from TCGA samples using <code><a href="../reference/parseTCGAsampleInfo.html">parseTcgaSampleInfo()</a></code>
 </li>
 <li>Generate TCGA sample metadata when loading TCGA junction quantification</li>
 <li>Present data summary after loading the data</li>

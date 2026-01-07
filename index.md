@@ -57,14 +57,6 @@ BiocManager::install("psichomics")
 library("psichomics")
 ```
 
-3.  RStudio is now accessible via the web browser at
-    <https://localhost:8787>
-4.  Enter RStudio with user `rstudio` and password `bioc`
-5.  Load psichomics using
-    [`library(psichomics)`](https://nuno-agostinho.github.io/psichomics/)
-6.  Start the visual interface of psichomics with
-    [`psichomics()`](https://nuno-agostinho.github.io/psichomics/reference/psichomics.md)
-
 Start the visual interface of psichomics with
 [`psichomics()`](https://nuno-agostinho.github.io/psichomics/reference/psichomics.md)
 
@@ -93,11 +85,12 @@ psichomics and its dependencies.
 
     docker pull ghcr.io/nuno-agostinho/psichomics:latest
 
-2.  Start RStudio Web from the Docker image:
+2.  Start RStudio Web from the Docker image (mount your own Downloads
+    folder):
 
 &nbsp;
 
-    docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/psichomics:latest
+    docker run -e PASSWORD=bioc -p 8787:8787 -v ~/Downloads:/home/rstudio/Downloads ghcr.io/nuno-agostinho/psichomics:latest
 
 3.  Go to RStudio Web via the web browser at <https://localhost:8787>
 4.  Log in RStudio with user `rstudio` and password `bioc`

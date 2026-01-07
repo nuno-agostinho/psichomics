@@ -18,7 +18,7 @@ Other functions associated with TCGA data retrieval:
 [`getTCGAdataTypes()`](https://nuno-agostinho.github.io/psichomics/reference/getTCGAdataTypes.md),
 [`isFirebrowseUp()`](https://nuno-agostinho.github.io/psichomics/reference/isFirebrowseUp.md),
 [`loadTCGAdata()`](https://nuno-agostinho.github.io/psichomics/reference/loadTCGAdata.md),
-[`parseTCGAsampleTypes()`](https://nuno-agostinho.github.io/psichomics/reference/parseTcgaSampleInfo.md)
+[`parseTCGAsampleTypes()`](https://nuno-agostinho.github.io/psichomics/reference/parseTCGAsampleInfo.md)
 
 Other functions associated with GTEx data retrieval:
 [`getGtexDataTypes()`](https://nuno-agostinho.github.io/psichomics/reference/getGtexDataTypes.md),

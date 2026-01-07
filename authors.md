@@ -25,7 +25,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/nuno-agostinho/psichomics/blob/devel/inst/CITATION)
+[`inst/CITATION`](https://github.com/nuno-agostinho/psichomics/blob/1.36.1/inst/CITATION)
 
 Saraiva-Agostinho N, Barbosa-Morais NL (2019). “psichomics: graphical
 application for alternative splicing quantification and analysis.”

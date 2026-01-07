@@ -1,6 +1,22 @@
 # Changelog
 
-## psichomics 1.28.1 (4 Feb, 2024)
+## psichomics 1.36.1 (7 January, 2026)
+
+- GTEx data loading
+  ([`loadGtexData()`](https://nuno-agostinho.github.io/psichomics/reference/loadGtexData.md)):
+  - Support for loading GTEx V10 data
+- Documentation:
+  - Remove confusing instructions on launching psichomics from README
+  - Improve Docker instructions on README
+  - Update external function documentation
+  - Update license copyright years
+  - Update email contact
+- Bug fixes:
+  - Fix interface not loading for collapse panels
+  - Fix eBayes error on graphical interface
+  - Fix unit tests when testing `shiny` buttons
+
+## psichomics 1.28.1 (4 February, 2024)
 
 - Update GTEx data download based on new URL endpoints
 - Documentation:
@@ -14,8 +30,10 @@
   - Fix unit test issues when testing low coverage using random PSI
     values
   - Update pkgdown and R CMD check automation in GitHub Actions
+  - (Docker) Fix subfolder creation error when parent folder does not
+    exist
 
-## psichomics 1.24.0 (26 Oct, 2022)
+## psichomics 1.24.0 (26 October, 2022)
 
 - Bug fix: psichomics app now opens as expected instead of crashing
 
@@ -809,7 +827,7 @@ Replace deprecated `R.utils::evalWithTimeout()` with
   - Quantify splicing based on a list of genes (splicing events within
     all genes are quantified by default)
   - Parse sample information from TCGA samples using
-    [`parseTcgaSampleInfo()`](https://nuno-agostinho.github.io/psichomics/reference/parseTcgaSampleInfo.md)
+    [`parseTcgaSampleInfo()`](https://nuno-agostinho.github.io/psichomics/reference/parseTCGAsampleInfo.md)
   - Generate TCGA sample metadata when loading TCGA junction
     quantification
   - Present data summary after loading the data

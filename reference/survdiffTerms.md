@@ -71,6 +71,10 @@ predictors to be treated as a separate group, rather than being omitted,
 use the `factor` function with its `exclude` argument to recode the
 righ-hand-side covariate.
 
+Note that the ordinary log-rank test is equivalent to the score test
+from a Cox model, using the Breslow approximation for ties. Use the Cox
+model form for more complex models, e.g., time-dependent covariates.
+
 ## References
 
 Harrington, D. P. and Fleming, T. R. (1982). A class of rank test

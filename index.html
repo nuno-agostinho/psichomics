@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">psichomics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.28.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.36.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -119,16 +119,6 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"psichomics"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://nuno-agostinho.github.io/psichomics/">"psichomics"</a></span><span class="op">)</span></span></code></pre></div>
-<ol start="3" style="list-style-type: decimal">
-<li>RStudio is now accessible via the web browser at <a href="https://localhost:8787" class="external-link uri">https://localhost:8787</a>
-</li>
-<li>Enter RStudio with user <code>rstudio</code> and password <code>bioc</code>
-</li>
-<li>Load psichomics using <code><a href="https://nuno-agostinho.github.io/psichomics/">library(psichomics)</a></code>
-</li>
-<li>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code>
-</li>
-</ol>
 <p>Start the visual interface of psichomics with <code><a href="reference/psichomics.html">psichomics()</a></code></p>
 </div>
 <div class="section level3">
@@ -150,9 +140,9 @@
 </ol>
 <pre><code>docker pull ghcr.io/nuno-agostinho/psichomics:latest</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li>Start RStudio Web from the Docker image:</li>
+<li>Start RStudio Web from the Docker image (mount your own Downloads folder):</li>
 </ol>
-<pre><code>docker run -e PASSWORD=bioc -p 8787:8787 ghcr.io/nuno-agostinho/psichomics:latest</code></pre>
+<pre><code>docker run -e PASSWORD=bioc -p 8787:8787 -v ~/Downloads:/home/rstudio/Downloads ghcr.io/nuno-agostinho/psichomics:latest</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Go to RStudio Web via the web browser at <a href="https://localhost:8787" class="external-link uri">https://localhost:8787</a>
 </li>

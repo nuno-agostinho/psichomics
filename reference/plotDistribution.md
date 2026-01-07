@@ -57,8 +57,7 @@ plotDistribution(
 
   :   the smoothing bandwidth to be used. The kernels are scaled such
       that this is the standard deviation of the smoothing kernel. (Note
-      this differs from the reference books cited below, and from
-      S-PLUS.)
+      this differs from the reference books cited below.)
 
       `bw` can also be a character string giving a rule to choose the
       bandwidth. See
@@ -152,6 +151,20 @@ plotDistribution(
   :   by default, the values of `from` and `to` are `cut` bandwidths
       beyond the extremes of the data. This allows the estimated density
       to drop to approximately zero at the extremes.
+
+  `ext`
+
+  :   a positive extension factor, `4` by default. The values `from` and
+      `to` are further extended on both sides to `lo <- from - ext * bw`
+      and `up <- to + ext * bw` which are then used to build the grid
+      used for the FFT and interpolation, see `n` above. Do not change
+      unless you know what you are doing!
+
+  `old.coords`
+
+  :   [`logical`](https://rdrr.io/r/base/logical.html) to require pre-R
+      4.4.0 behaviour which gives too large values by a factor of about
+      \\(1 + 1/(2n-2))\\.
 
 - title:
 

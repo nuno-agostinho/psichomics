@@ -156,6 +156,7 @@
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/modTabPanel.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/navSelectize.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/normaliseGeneExpression.html</loc></url>
+<url><loc>https://nuno-agostinho.github.io/psichomics/reference/onCollapseOpen.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/operateOnGroups.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/optimSurvDiffSet.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/optimalSurvivalCutoff.html</loc></url>
@@ -173,7 +174,7 @@
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseSplicingEvent.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseSuppaEvent.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseSuppaGeneric.html</loc></url>
-<url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseTcgaSampleInfo.html</loc></url>
+<url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseTCGAsampleInfo.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseUniprotXML.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseUrlsFromFirebrowseResponse.html</loc></url>
 <url><loc>https://nuno-agostinho.github.io/psichomics/reference/parseVastToolsEvent.html</loc></url>

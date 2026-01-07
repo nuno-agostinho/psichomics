@@ -37,8 +37,8 @@ API](http://firebrowse.org/api-docs/)
 - [`loadTCGAdata()`](https://nuno-agostinho.github.io/psichomics/reference/loadTCGAdata.md)
   : Download and process TCGA data
 
-- [`parseTCGAsampleTypes()`](https://nuno-agostinho.github.io/psichomics/reference/parseTcgaSampleInfo.md)
-  [`parseTCGAsampleInfo()`](https://nuno-agostinho.github.io/psichomics/reference/parseTcgaSampleInfo.md)
+- [`parseTCGAsampleTypes()`](https://nuno-agostinho.github.io/psichomics/reference/parseTCGAsampleInfo.md)
+  [`parseTCGAsampleInfo()`](https://nuno-agostinho.github.io/psichomics/reference/parseTCGAsampleInfo.md)
   : Parse sample information from TCGA sample identifiers
 
 ## GTEx data retrieval
