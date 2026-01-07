@@ -40,14 +40,14 @@ for each group)?}
   \describe{
     \item{\code{bw}}{the smoothing bandwidth to be used.  The kernels are scaled
     such that this is the standard deviation of the smoothing kernel.
-    (Note this differs from the reference books cited below, and from S-PLUS.)
+    (Note this differs from the reference books cited below.)
 
     \code{bw} can also be a character string giving a rule to choose the
     bandwidth.  See \code{\link[stats]{bw.nrd}}. \cr The default,
     \code{"nrd0"}, has remained the default for historical and
     compatibility reasons, rather than as a general recommendation,
-    where e.g., \code{"SJ"} would rather fit, see also Venables and
-    Ripley (2002).
+    where e.g., \code{"SJ"} would rather fit, see also
+    Venables and Ripley (2002).
 
     The specified (or computed) value of \code{bw} is multiplied by
     \code{adjust}.
@@ -109,6 +109,14 @@ for each group)?}
     \item{\code{cut}}{by default, the values of \code{from} and \code{to} are
     \code{cut} bandwidths beyond the extremes of the data.  This allows
     the estimated density to drop to approximately zero at the extremes.}
+    \item{\code{ext}}{a positive extension factor, \code{4} by default.  The values
+    \code{from} and \code{to} are further extended on both sides to
+    \code{lo <- from - ext * bw} and \code{up <- to + ext * bw} which are
+    then used to build the grid used for the FFT and interpolation, see
+    \code{n} above.
+    Do not change unless you know what you are doing!}
+    \item{\code{old.coords}}{\code{\link{logical}} to require pre-R 4.4.0 behaviour
+    which gives too large values by a factor of about \eqn{(1 + 1/(2n-2))}.}
   }}
 
 \item{title}{Character: plot title}

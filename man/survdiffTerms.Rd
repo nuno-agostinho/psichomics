@@ -62,6 +62,10 @@ To cause missing values in the predictors to be treated as a separate
 group, rather than being omitted, use the \code{factor} function with its
 \code{exclude} argument to recode the righ-hand-side covariate.
 
+Note that the ordinary log-rank test is equivalent to the score test
+from a Cox model, using the Breslow approximation for ties.
+Use the Cox model form for more complex models, e.g., time-dependent covariates.
+
 }
 
 \examples{

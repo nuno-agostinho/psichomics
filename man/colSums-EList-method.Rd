@@ -15,7 +15,7 @@
 \item{na.rm}{logical.  Should missing values (including \code{NaN})
     be omitted from the calculations?}
 
-\item{dims}{integer: Which dimensions are regarded as \sQuote{rows} or
+\item{dims}{integer number: Which dimensions are regarded as \sQuote{rows} or
     \sQuote{columns} to sum over.  For \code{row*}, the sum or mean is
     over dimensions \code{dims+1, \dots}; for \code{col*} it is over
     dimensions \code{1:dims}.}

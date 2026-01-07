@@ -32,7 +32,7 @@ Depends:
     shinyBS
 License: MIT + file LICENSE
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Imports:
     AnnotationDbi,
     AnnotationHub,
