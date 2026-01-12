@@ -107,13 +107,13 @@ psi <- quantifySplicing(annot, junctionQuant, eventType=c("SE", "MXE"))
 group <- c(rep("Normal", 3), rep("Tumour", 3))
 diffAnalyses(psi, group)
 #> 
-#> Time difference of 0.0229 secs
+#> Time difference of 0.0227 secs
 #> 
-#> Time difference of 0.0062 secs
+#> Time difference of 0.00621 secs
 #> 
-#> Time difference of 0.000306 secs
+#> Time difference of 0.000303 secs
 #> 
-#> Time difference of 0.00102 secs
+#> Time difference of 0.000991 secs
 #>                                                    Event type Chromosome Strand
 #> SE_1_+_32_35_37_38_ACTN1                    Skipped exon (SE)          1      +
 #> MXE_1_+_32_35_37_38_40_42_ACTN1 Mutually exclusive exon (MXE)          1      +
