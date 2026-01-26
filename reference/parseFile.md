@@ -21,7 +21,7 @@ parseFile(format, file, ..., verbose = FALSE)
 - ...:
 
   Extra parameters passed to
-  [fread](https://rdatatable.gitlab.io/data.table/reference/fread.html)
+  [fread](https://rdrr.io/pkg/data.table/man/fread.html)
 
 - verbose:
 

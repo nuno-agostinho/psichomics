@@ -33,112 +33,115 @@ Parsed response or `NULL` if no response
 path  <- "overlap/region/human/7:140424943-140624564"
 query <- list(feature = "gene")
 psichomics:::queryEnsembl(path, query, grch37 = TRUE)
-#>   strand              id                          logic_name         gene_id
-#> 1     -1 ENSG00000157764 ensembl_havana_gene_homo_sapiens_37 ENSG00000157764
-#> 2      1 ENSG00000271932               ncrna_homo_sapiens_37 ENSG00000271932
-#>   seq_region_name assembly_name external_name canonical_transcript feature_type
-#> 1               7        GRCh37          BRAF    ENST00000288602.6         gene
-#> 2               7        GRCh37            U6    ENST00000605989.1         gene
+#>           gene_id canonical_transcript external_name seq_region_name version
+#> 1 ENSG00000157764    ENST00000288602.6          BRAF               7       8
+#> 2 ENSG00000271932    ENST00000605989.1            U6               7       1
+#>   assembly_name        biotype
+#> 1        GRCh37 protein_coding
+#> 2        GRCh37          snRNA
 #>                                                                   description
 #> 1 v-raf murine sarcoma viral oncogene homolog B [Source:HGNC Symbol;Acc:1097]
 #> 2                               U6 spliceosomal RNA [Source:RFAM;Acc:RF00026]
-#>   version     start        biotype       end         source
-#> 1       8 140419127 protein_coding 140624564 ensembl_havana
-#> 2       1 140583872          snRNA 140583978        ensembl
+#>   feature_type     start       end              id         source
+#> 1         gene 140419127 140624564 ENSG00000157764 ensembl_havana
+#> 2         gene 140583872 140583978 ENSG00000271932        ensembl
+#>                            logic_name strand
+#> 1 ensembl_havana_gene_homo_sapiens_37     -1
+#> 2               ncrna_homo_sapiens_37      1
 
 path  <- "lookup/symbol/human/BRCA2"
 query <- list(expand=1)
 psichomics:::queryEnsembl(path, query, grch37 = TRUE)
-#> $display_name
-#> [1] "BRCA2"
-#> 
-#> $strand
-#> [1] 1
-#> 
-#> $object_type
-#> [1] "Gene"
-#> 
-#> $start
-#> [1] 32889611
-#> 
 #> $canonical_transcript
 #> [1] "ENST00000544455.1"
-#> 
-#> $source
-#> [1] "ensembl_havana"
-#> 
-#> $logic_name
-#> [1] "ensembl_havana_gene_homo_sapiens_37"
-#> 
-#> $id
-#> [1] "ENSG00000139618"
 #> 
 #> $end
 #> [1] 32973805
 #> 
+#> $source
+#> [1] "ensembl_havana"
+#> 
 #> $db_type
 #> [1] "core"
 #> 
-#> $description
-#> [1] "breast cancer 2, early onset [Source:HGNC Symbol;Acc:1101]"
+#> $id
+#> [1] "ENSG00000139618"
+#> 
+#> $logic_name
+#> [1] "ensembl_havana_gene_homo_sapiens_37"
+#> 
+#> $strand
+#> [1] 1
 #> 
 #> $assembly_name
 #> [1] "GRCh37"
 #> 
-#> $biotype
-#> [1] "protein_coding"
+#> $species
+#> [1] "human"
 #> 
-#> $version
-#> [1] 10
+#> $Transcript
+#>        end         source strand gencode_primary db_type              id
+#> 1 32973347 ensembl_havana      1               0    core ENST00000380152
+#> 2 32907428         havana      1               0    core ENST00000530893
+#> 3 32953632         havana      1               0    core ENST00000528762
+#> 4 32972409         havana      1               0    core ENST00000470094
+#> 5 32972585         havana      1               0    core ENST00000533776
+#> 6 32973805        ensembl      1               0    core ENST00000544455
+#>                  logic_name species seq_region_name assembly_name version
+#> 1 ensembl_havana_transcript   human              13        GRCh37       3
+#> 2    havana_homo_sapiens_37   human              13        GRCh37       2
+#> 3    havana_homo_sapiens_37   human              13        GRCh37       1
+#> 4    havana_homo_sapiens_37   human              13        GRCh37       1
+#> 5    havana_homo_sapiens_37   human              13        GRCh37       1
+#> 6   ensembl_homo_sapiens_37   human              13        GRCh37       1
+#>      start                 biotype length         Exon is_canonical
+#> 1 32889611          protein_coding  10930 c(4, 1, ....            0
+#> 2 32889642          protein_coding   2011 c("human....            0
+#> 3 32945108 nonsense_mediated_decay    495 c("ENSE0....            0
+#> 4 32953977 nonsense_mediated_decay    842 c("13", ....            0
+#> 5 32970946         retained_intron    523 c("13", ....            0
+#> 6 32889617          protein_coding  10984 c("13", ....            1
+#>   display_name object_type Translation.start Translation.end Translation.length
+#> 1    BRCA2-001  Transcript          32890598        32972907               3418
+#> 2    BRCA2-003  Transcript          32899266        32907428                481
+#> 3    BRCA2-005  Transcript          32945108        32950807                 64
+#> 4    BRCA2-002  Transcript          32953977        32970229                186
+#> 5    BRCA2-006  Transcript                NA              NA                 NA
+#> 6    BRCA2-201  Transcript          32890598        32972907               3418
+#>   Translation.version Translation.species Translation.Parent
+#> 1                   3               human    ENST00000380152
+#> 2                   2               human    ENST00000530893
+#> 3                   1               human    ENST00000528762
+#> 4                   1               human    ENST00000470094
+#> 5                  NA                <NA>               <NA>
+#> 6                   1               human    ENST00000544455
+#>   Translation.db_type Translation.object_type  Translation.id          Parent
+#> 1                core             Translation ENSP00000369497 ENSG00000139618
+#> 2                core             Translation ENSP00000435699 ENSG00000139618
+#> 3                core             Translation ENSP00000433168 ENSG00000139618
+#> 4                core             Translation ENSP00000434898 ENSG00000139618
+#> 5                <NA>                    <NA>            <NA> ENSG00000139618
+#> 6                core             Translation ENSP00000439902 ENSG00000139618
 #> 
 #> $seq_region_name
 #> [1] "13"
 #> 
-#> $Transcript
-#>   length Translation.object_type Translation.Parent Translation.db_type
-#> 1  10930             Translation    ENST00000380152                core
-#> 2   2011             Translation    ENST00000530893                core
-#> 3    495             Translation    ENST00000528762                core
-#> 4    842             Translation    ENST00000470094                core
-#> 5    523                    <NA>               <NA>                <NA>
-#> 6  10984             Translation    ENST00000544455                core
-#>   Translation.start Translation.end  Translation.id Translation.species
-#> 1          32890598        32972907 ENSP00000369497               human
-#> 2          32899266        32907428 ENSP00000435699               human
-#> 3          32945108        32950807 ENSP00000433168               human
-#> 4          32953977        32970229 ENSP00000434898               human
-#> 5                NA              NA            <NA>                <NA>
-#> 6          32890598        32972907 ENSP00000439902               human
-#>   Translation.length Translation.version is_canonical strand display_name
-#> 1               3418                   3            0      1    BRCA2-001
-#> 2                481                   2            0      1    BRCA2-003
-#> 3                 64                   1            0      1    BRCA2-005
-#> 4                186                   1            0      1    BRCA2-002
-#> 5                 NA                  NA            0      1    BRCA2-006
-#> 6               3418                   1            1      1    BRCA2-201
-#>   gencode_primary    start object_type seq_region_name version assembly_name
-#> 1               0 32889611  Transcript              13       3        GRCh37
-#> 2               0 32889642  Transcript              13       2        GRCh37
-#> 3               0 32945108  Transcript              13       1        GRCh37
-#> 4               0 32953977  Transcript              13       1        GRCh37
-#> 5               0 32970946  Transcript              13       1        GRCh37
-#> 6               0 32889617  Transcript              13       1        GRCh37
-#>                   biotype         Exon species              id
-#> 1          protein_coding c("13", ....   human ENST00000380152
-#> 2          protein_coding c("ENSE0....   human ENST00000530893
-#> 3 nonsense_mediated_decay c(1, 1, ....   human ENST00000528762
-#> 4 nonsense_mediated_decay c("Exon"....   human ENST00000470094
-#> 5         retained_intron c("13", ....   human ENST00000533776
-#> 6          protein_coding c("ENSE0....   human ENST00000544455
-#>                  logic_name         source          Parent      end db_type
-#> 1 ensembl_havana_transcript ensembl_havana ENSG00000139618 32973347    core
-#> 2    havana_homo_sapiens_37         havana ENSG00000139618 32907428    core
-#> 3    havana_homo_sapiens_37         havana ENSG00000139618 32953632    core
-#> 4    havana_homo_sapiens_37         havana ENSG00000139618 32972409    core
-#> 5    havana_homo_sapiens_37         havana ENSG00000139618 32972585    core
-#> 6   ensembl_homo_sapiens_37        ensembl ENSG00000139618 32973805    core
+#> $version
+#> [1] 10
 #> 
-#> $species
-#> [1] "human"
+#> $description
+#> [1] "breast cancer 2, early onset [Source:HGNC Symbol;Acc:1101]"
+#> 
+#> $biotype
+#> [1] "protein_coding"
+#> 
+#> $start
+#> [1] 32889611
+#> 
+#> $display_name
+#> [1] "BRCA2"
+#> 
+#> $object_type
+#> [1] "Gene"
 #> 
 ```
