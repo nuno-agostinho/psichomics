@@ -41,7 +41,7 @@ Parsed response
 psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> $search
 #> $search$count
-#> [1] "23237"
+#> [1] "23272"
 #> 
 #> $search$retmax
 #> [1] "3"
