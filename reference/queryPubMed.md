@@ -41,7 +41,7 @@ Parsed response
 psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> $search
 #> $search$count
-#> [1] "23272"
+#> [1] "23295"
 #> 
 #> $search$retmax
 #> [1] "3"
@@ -287,7 +287,9 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> [1] "2374-2445"
 #> 
 #> $`38421676`$pubtype
-#> [1] "Journal Article"
+#> [1] "Journal Article"                     
+#> [2] "Research Support, Non-U.S. Gov't"    
+#> [3] "Research Support, N.I.H., Extramural"
 #> 
 #> $`38421676`$recordstatus
 #> [1] "PubMed - indexed for MEDLINE"
@@ -453,7 +455,7 @@ psichomics:::queryPubMed("BRCA1", "cancer", "adrenocortical carcinoma")
 #> [1] "1532-1827"
 #> 
 #> $`38030749`$pubtype
-#> [1] "Journal Article"
+#> [1] "Journal Article"                  "Research Support, Non-U.S. Gov't"
 #> 
 #> $`38030749`$recordstatus
 #> [1] "PubMed - indexed for MEDLINE"
