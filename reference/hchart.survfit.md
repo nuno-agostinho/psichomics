@@ -74,6 +74,8 @@ require("survival")
 #> Loading required package: survival
 require("highcharter")
 #> Loading required package: highcharter
+#> Highcharts (www.highcharts.com) is a Highsoft software product which is
+#> not free for commercial and Governmental use
 leukemia.surv <- survfit(Surv(time, status) ~ x, data = aml)
 hchart(leukemia.surv)
 

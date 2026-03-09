@@ -61,7 +61,7 @@ psichomics:::leveneTest(vals, group)
 #>  Levene's test (using the median)
 #> 
 #> data:  vals and group
-#> W = 0.97808, p-value = 0.389
+#> W = 0.71403, p-value = 0.4987
 #> 
 
 ## Using Levene's test based on the mean
@@ -70,6 +70,6 @@ psichomics:::leveneTest(vals, group, mean)
 #>  Levene's test (using the mean)
 #> 
 #> data:  vals and group
-#> W = 1.3031, p-value = 0.2882
+#> W = 1.6676, p-value = 0.2076
 #> 
 ```

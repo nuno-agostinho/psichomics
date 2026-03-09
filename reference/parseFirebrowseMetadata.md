@@ -105,7 +105,7 @@ psichomics:::parseFirebrowseMetadata("HeartBeat")
 #> [1] "FireBrowse API at firebrowse.org:8000 is alive"                
 #> [2] "Version: 1.1.40 (2019-10-13 13:15:04 c66e6f910b6a89397a4de26c)"
 #> [3] "Root Dir: /local/firebrowse/firebrowse_1.1.40"                 
-#> [4] "Launched On: 2025_12_06 14:23:53 EST\n"                        
+#> [4] "Launched On: 2026_03_07 11:42:57 EST\n"                        
 #> 
 
 # Get the abbreviation and description of all cohorts available
