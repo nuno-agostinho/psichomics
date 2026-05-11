@@ -1,4 +1,4 @@
-FROM bioconductor/bioconductor_docker:3.22
+FROM bioconductor/bioconductor_docker:3.23
 MAINTAINER Nuno Agostinho <nunodanielagostinho@gmail.com>
 
 RUN apt-get update && apt-get -y upgrade && apt-get -y autoremove
