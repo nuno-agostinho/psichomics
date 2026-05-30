@@ -16,6 +16,18 @@
 #' performPCA(USArrests)
 performPCA <- function(data, center=TRUE, scale.=FALSE,
                        missingValues=round(0.05 * nrow(data)), ...) {
+    # Convert to matrix for reliable dimension checks
+    if (is.data.frame(data)) {
+        data <- as.matrix(data)
+    }
+
+    # Edge cases: empty input
+    if (is.null(data) || length(data) == 0 ||
+        nrow(data) == 0 || ncol(data) == 0) {
+        warning("performPCA: input data has no rows or columns")
+        return(NULL)
+    }
+
     reduceDimensionality(data, "pca", missingValues=missingValues,
                          center=center, scale.=scale., ...)
 }
