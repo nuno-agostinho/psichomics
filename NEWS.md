@@ -1,3 +1,7 @@
+# psichomics 1.38.1 (30 May, 2026)
+
+* Bug fix: handle empty inputs in `performPCA()` to prevent crashes
+
 # psichomics 1.36.1 (7 January, 2026)
 
 * GTEx data loading (`loadGtexData()`):
